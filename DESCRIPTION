@@ -1,9 +1,12 @@
 Package: modelbot
-Title: A Shiny App for Data Analysis with AI
-Version: 0.1.0
-Authors@R: 
-    person("Joe", "Cheng", , "joe@posit.co", role = c("aut", "cre"))
-Description: A Shiny application that provides an AI-powered interface for data analysis.
+Title: Frontend For Predictive Modeling With 'tidymodels'
+Version: 0.0.0.0009
+Authors@R: c(
+    person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre")),
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut")
+    )
+Description: A Shiny application that provides an AI-powered interface for 
+    predictive modeling.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -28,7 +31,7 @@ Imports:
     withr
 Remotes:
     tidyverse/ellmer,
-    posit-dev/shinychat
+    posit-dev/shinychat#52
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
