@@ -26,7 +26,7 @@ for (model_type in model_types) {
     ")"
   ))
 
-  ch$chat(
+  ch$clone()$chat(
     paste0("Your task is to write the most succint documentation possible for the 
      tidymodels modeling function ", model_type, "."),
     "You will be provided some context on the modes, engines, and required extension
