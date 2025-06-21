@@ -4,6 +4,7 @@ run_experiment <- function(
   model,
   resampling_fn
 ) {
+  # TODO: track elapsed time
   withr::local_options(
     error = function(e) {
       ellmer::ContentToolResult(
@@ -25,9 +26,9 @@ run_experiment <- function(
     resampling_fn,
     # TODO: maybe this needs to be cached and retrieved from somewhere.
     # should this be its own tool call?
-    resamples = get(folds),
-    object = model,
+    object = spec,
     preprocessor = preprocessor,
+    resamples = get(folds),
     .ns = if (resampling_fn %in% c("tune_race_anova", "tune_sim_anneal")) {
       "finetune"
     } else {
@@ -74,7 +75,7 @@ concatenate_directory <- function(dir) {
     full.names = TRUE
   )
   paste0(
-    map_chr(files, ~paste0(readLines(.x), collapse = "\n"), warn = FALSE),
+    purrr::map_chr(files, ~paste0(readLines(.x), collapse = "\n"), warn = FALSE),
     collapse = "\n"
   )
 }
