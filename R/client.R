@@ -3,6 +3,7 @@ modelbot_client <- function(
   default_turns = list()
 ) {
   chat$set_system_prompt(modelbot_prompt())
+  chat$set_turns(default_turns)
 
   chat$register_tool(tool(
     run_r_code,
