@@ -64,7 +64,7 @@ chat <- function(new_session = FALSE) {
       restored_since_last_turn <- TRUE
     }
 
-    chat <- chat_bot(default_turns = globals$turns)
+    chat <- modelbot_client(default_turns = globals$turns)
     start_chat_request <- function(user_input) {
       prefix <- if (restored_since_last_turn) {
         paste0(

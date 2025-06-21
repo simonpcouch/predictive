@@ -5,7 +5,7 @@ modelbot is a fork of [databot](https://github.com/jcheng5/databot) focused on p
 * Models don't "just know" tidymodels in the way that they tend to for base R and the tidyverse, requiring more extensive prompting.
 * It is typical for modeling code to take a long time to run, requiring asynchronous execution and new UI.
 
-modelbot is an experiment in revisiting Databot with these two considerations in mind.
+modelbot is an experiment in revisiting databot with these two considerations in mind.
 
 ### Package installation
 
