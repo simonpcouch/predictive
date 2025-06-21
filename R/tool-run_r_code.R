@@ -115,3 +115,10 @@ run_r_code <- function(code) {
 in_shiny <- function() {
   !is.null(shiny::getDefaultReactiveDomain())
 }
+
+tool_run_r_code <- 
+  tool(
+    run_r_code,
+    "Executes R code in the current session",
+    code = type_string("R code to execute")
+  )

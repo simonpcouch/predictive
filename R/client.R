@@ -5,11 +5,8 @@ modelbot_client <- function(
   chat$set_system_prompt(modelbot_prompt())
   chat$set_turns(default_turns)
 
-  chat$register_tool(tool(
-    run_r_code,
-    "Executes R code in the current session",
-    code = type_string("R code to execute")
-  ))
+  chat$register_tool(tool_run_r_code)
+  chat$register_tool(tool_run_experiment)
   chat$set_tools(c(chat$get_tools(), btw::btw_tools(tools = "docs")))
 
   chat
