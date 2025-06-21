@@ -23,7 +23,7 @@ latest_session <- reactiveVal()
 #'   R process).
 #'
 #' @export
-modelbot <- function(new_session = FALSE) {
+model_bot <- function(new_session = FALSE) {
   withr::local_envvar(NO_COLOR = "1")
 
   if (isTRUE(new_session)) {

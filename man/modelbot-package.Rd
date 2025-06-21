@@ -2,6 +2,7 @@
 % Please edit documentation in R/modelbot-package.R
 \docType{package}
 \name{modelbot-package}
+\alias{modelbot}
 \alias{modelbot-package}
 \title{modelbot: Frontend For Predictive Modeling With 'tidymodels'}
 \description{
