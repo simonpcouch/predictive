@@ -1,19 +1,19 @@
 ## `bag_tree()`
 
-An ensemble of decision trees (bagging). Slower than a single tree, but more stable and accurate.
+Bagged decision trees are ensembles that improve stability by averaging many models. They are effective for a variety of problems and are relatively fast to fit, though slower than a single tree.
 
 Arguments:
-* `cost_complexity`: Cost-complexity parameter (`rpart` only). Tune.
-* `tree_depth`: Maximum tree depth (`rpart` only). Tune.
-* `min_n`: Minimum node size for a split. Tune.
-* `class_cost`: Cost of misclassifying minority class (`C5.0` only). Tune.
+* `cost_complexity`: A penalty for model complexity. It is recommended to tune this parameter.
+* `tree_depth`: The maximum depth of any tree in the ensemble. It is recommended to tune this parameter.
+* `min_n`: The minimum number of data points in a node to be split further. It is recommended to tune this parameter.
+* `class_cost`: A cost value for misclassifying the minority class. Useful for imbalanced datasets and should be tuned.
 
 Engines:
 * `rpart` (classification, regression, censored regression)
-    - General purpose, but can be less accurate than `C5.0`.
-    - Requires `baguette` for classification/regression, `censored` for censored regression.
+    - A good default engine that supports all model modes.
+    - Requires the `baguette` package for classification and regression, and the `censored` package for censored regression.
 * `C5.0` (classification)
-    - Often more accurate for classification.
-    - Doesn't support `cost_complexity` or `tree_depth`.
-    - Requires `baguette`.
+    - Does not support the `cost_complexity` argument.
+    - Often a faster and more memory-efficient option for classification.
+    - Requires the `baguette` extension package.
 

@@ -1,15 +1,17 @@
 ## `surv_reg()`
 
-**Deprecated in favor of `survival_reg()`**. A parametric model for censored, time-to-event data. Fitting is generally fast.
+**Note:** This function is deprecated in favor of `survival_reg()` with `mode = "censored regression"`.
+
+Parametric survival models are used for time-to-event (censored regression) data. They assume the survival time follows a specific probability distribution. These models are highly interpretable and very fast to fit.
 
 Arguments:
-* `dist`: Assumed probability distribution for the outcome. Tune.
+* `dist`: The probability distribution for the survival time (e.g., `"weibull"`, `"lognormal"`). This is a fundamental model specification choice.
 
 Engines:
 * `survival` (regression)
-    - The standard engine for survival analysis in R.
-    - No extension package needed.
+    - The default engine. Provides standard and robust parametric survival models.
+    - No parsnip extension package is required.
 * `flexsurv` (regression)
-    - Allows for a wider variety of parametric survival distributions.
-    - No extension package needed.
+    - A more flexible engine that supports a wider range of distributions.
+    - No parsnip extension package is required.
 

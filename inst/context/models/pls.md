@@ -1,13 +1,13 @@
 ## `pls()`
 
-Partial Least Squares (PLS). A powerful method for dimensionality reduction and regression/classification, especially with collinear predictors. Fitting speed is moderate.
+Partial Least Squares (PLS) is a dimension reduction method that creates components to explain both predictor and outcome variation. It is highly effective for datasets with many correlated predictors (e.g., "wide" data) and is very fast to fit.
 
 Arguments:
-* `num_comp`: Number of PLS components to retain. Tune.
-* `predictor_prop`: Max proportion of non-zero predictor coefficients per component. Tune.
+* `num_comp`: The number of PLS components to retain. This is the primary tuning parameter and it is recommended to tune it.
+* `predictor_prop`: The proportion of predictors to keep in each component (for sparse PLS). It is recommended to tune this parameter for built-in feature selection.
 
 Engines:
 * `mixOmics` (classification, regression)
-    - A versatile engine for PLS and related methods.
-    - Requires the `plsmod` package.
+    - A powerful and flexible engine for PLS and its variants.
+    - Requires the `plsmod` extension package.
 

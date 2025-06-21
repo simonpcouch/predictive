@@ -1,12 +1,12 @@
 ## `null_model()`
 
-A non-informative baseline model that ignores predictors. Predicts the mean (regression) or most frequent class (classification). Fitting is instantaneous.
+The null model is a non-informative model that ignores all predictors and simply predicts the average value of the training data (the mean for regression, the most common class for classification). It is used as a simple baseline to ensure any other model is performing better than chance. Fitting is instantaneous.
 
 Arguments:
 * This model has no tunable arguments.
 
 Engines:
 * `parsnip` (classification, regression)
-    - The only engine, providing a minimal performance baseline.
-    - No extension package needed.
+    - The default and only engine.
+    - No parsnip extension package is required.
 

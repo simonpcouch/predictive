@@ -1,26 +1,16 @@
 ## `rand_forest()`
 
-Random Forest. A powerful and widely used ensemble model. Slower to fit than a single tree, but generally has high accuracy.
+Random forests are powerful ensemble models that build many independent decision trees and average their predictions. They are highly accurate, handle non-linear relationships well, and are resistant to overfitting. Fitting speed is moderate, slower than single trees but often faster than boosting.
 
 Arguments:
-* `mtry`: # predictors to sample at each split. Tune.
-* `trees`: # trees in the ensemble. Tune.
-* `min_n`: Minimum node size for a split. Tune.
+* `mtry`: The number of predictors randomly sampled at each split. It is a key parameter to tune for performance.
+* `trees`: The number of trees in the forest. Generally, more is better, but this increases computation time.
+* `min_n`: The minimum number of data points in a node to be split further. It is a key parameter to tune to control tree complexity.
 
 Engines:
-* `ranger` (classification, regression)
-    - Default engine. A fast C++ implementation.
-    - No extension package needed.
-* `randomForest` (classification, regression)
-    - The original R implementation.
-    - No extension package needed.
-* `h2o` (classification, regression)
-    - A powerful, scalable engine for large datasets.
-    - Requires the `agua` package.
-* `partykit` (classification, regression, censored regression)
-    - Uses conditional inference trees, which can be less biased.
-    - Requires `bonsai` for classification/regression or `censored` for censored regression.
-* `aorsf` (classification, regression, censored regression)
-    - Accelerated Oblique Random Forests, can find linear combinations of predictors.
-    - Requires `bonsai` for classification/regression or `censored` for censored regression.
+* `ranger` (classification, regression): The default engine. A very fast and memory-efficient implementation, making it a great general-purpose choice. No parsnip extension package is required.
+* `randomForest` (classification, regression): The original R implementation. Solid, but generally slower than `ranger`. No parsnip extension package is required.
+* `aorsf` (classification, censored regression): An engine optimized for speed, particularly for survival analysis. Requires the `bonsai` package for classification and `censored` for censored regression.
+* `partykit` (classification, censored regression): Implements conditional inference forests, which can reduce variable selection bias. Can be slower than other engines. Requires the `bonsai` package for classification and `censored` for censored regression.
+* `h2o` (classification, regression): A scalable engine designed for very large datasets. Requires the `agua` extension package.
 

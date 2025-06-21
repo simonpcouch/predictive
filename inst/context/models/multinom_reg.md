@@ -1,26 +1,25 @@
 ## `multinom_reg()`
 
-Multinomial regression for multi-class classification. A fast, interpretable baseline model.
+Multinomial regression extends logistic regression to handle multi-class classification problems (with more than two outcomes). It's a fast and interpretable linear model, making it an excellent baseline for classification.
 
 Arguments:
-* `penalty`: Regularization amount. Tune.
-* `mixture`: L1 vs. L2 regularization ratio. Tune.
+* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using regularized engines like `glmnet` or `brulee`.
+* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using regularized engines.
 
 Engines:
 * `nnet` (classification)
-    - Default engine.
-    - Doesn't support regularization.
-    - No extension package needed.
+    - The default engine. A fast and reliable implementation. Does not support the `mixture` argument.
+    - No parsnip extension package is required.
 * `glmnet` (classification)
-    - Good for high-dimensional data or when regularization is needed.
-    - No extension package needed.
-* `keras` (classification)
-    - A powerful and flexible neural network backend.
-    - No extension package needed.
-* `h2o` (classification)
-    - Highly scalable for large datasets.
-    - Requires the `agua` package.
+    - Excellent for regularized regression (lasso, ridge, elastic net), useful for high-dimensional data and feature selection. Supports both `penalty` and `mixture`.
+    - No parsnip extension package is required.
 * `brulee` (classification)
-    - Torch-based engine, can leverage GPUs for speed.
-    - No extension package needed.
+    - A fast, Torch-based engine suitable for GPU acceleration. Supports `penalty` and `mixture`.
+    - No parsnip extension package is required.
+* `h2o` (classification)
+    - A scalable engine designed for very large datasets.
+    - Requires the `agua` extension package.
+* `keras` (classification)
+    - A flexible deep learning engine. Does not support the `mixture` argument.
+    - No parsnip extension package is required.
 

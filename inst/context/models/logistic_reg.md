@@ -1,31 +1,28 @@
 ## `logistic_reg()`
 
-Logistic regression for binary classification. Fast, interpretable, and a good baseline model.
+Logistic regression is a fundamental, highly interpretable statistical method for binary classification. It is extremely fast to fit and serves as an excellent baseline model.
 
 Arguments:
-* `penalty`: Regularization amount. Tune.
-* `mixture`: L1 vs. L2 regularization ratio. Tune.
+* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using regularized engines (e.g., `glmnet`, `LiblineaR`, `brulee`).
+* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using regularized engines.
 
 Engines:
 * `glm` (classification)
-    - Default engine.
-    - Doesn't support regularization.
-    - No extension package needed.
+    - The default engine. A fast, standard implementation.
+    - No parsnip extension package is required.
 * `glmnet` (classification)
-    - Good for high-dimensional data or when regularization is needed.
-    - No extension package needed.
+    - Supports regularized regression (lasso, ridge, and elastic net), which is useful for high-dimensional data and feature selection. Supports `penalty` and `mixture`.
+    - No parsnip extension package is required.
 * `LiblineaR` (classification)
-    - Fast for large, sparse datasets. `mixture` must be 0 (L2) or 1 (L1).
-    - No extension package needed.
+    - A fast engine for large-scale linear classification. Supports `penalty` and `mixture` (must be 0 or 1).
+    - No parsnip extension package is required.
 * `brulee` (classification)
-    - Torch-based engine, can use GPUs for speed.
-    - No extension package needed.
+    - A fast, Torch-based engine suitable for GPU acceleration. Supports `penalty` and `mixture`.
+    - No parsnip extension package is required.
 * `gee` (classification)
-    - For correlated data via Generalized Estimating Equations.
-    - Doesn't support regularization.
-    - Requires the `multilevelmod` package.
+    - For correlated or clustered data (e.g., longitudinal studies).
+    - Requires the `multilevelmod` extension package.
 * `glmer` (classification)
-    - For multilevel/hierarchical models.
-    - Doesn't support regularization.
-    - Requires the `multilevelmod` package.
+    - For multilevel/hierarchical models with random effects.
+    - Requires the `multilevelmod` extension package.
 

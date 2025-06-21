@@ -1,5 +1,3 @@
-
-# set up a chat object
 ch <- chat_google_gemini(model = "gemini-2.5-pro")
 ch$set_tools(btw::btw_tools())
 
@@ -63,9 +61,12 @@ Exclude the '----' from the actual resulting file. Those are just for clear sepa
     do.call(
       btw::btw,
       list(
-        paste0("?", "parsnip::linear_reg"),
-        "Relevant modes, engines, and packages",
-        btw::btw_this(filter(parsnip:::model_info_table, model == model_type), format = "json")
+        paste0("?", "parsnip::", model_type),
+        "Relevant modes, engines, and packages: ",
+        btw::btw_this(
+          filter(parsnip:::model_info_table, model == model_type),
+          format = "json"
+        )
       )
     )
 

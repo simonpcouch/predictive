@@ -1,29 +1,25 @@
 ## `poisson_reg()`
 
-Poisson regression for modeling count data. Generally fast to fit.
+Poisson regression is a generalized linear model used for modeling count data. It is a fundamental statistical method that is very fast to fit and highly interpretable, making it an excellent baseline for count outcomes.
 
 Arguments:
-* `penalty`: Regularization amount. Tune.
-* `mixture`: L1 vs. L2 regularization ratio. Tune.
+* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using the `glmnet` engine.
+* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using the `glmnet` engine.
 
 Engines:
 * `glm` (regression)
-    - Default engine for a standard Poisson GLM.
-    - Doesn't support regularization.
-    - Requires `poissonreg` package.
+    - The default engine. A fast, standard implementation.
+    - Requires the `poissonreg` extension package.
 * `glmnet` (regression)
-    - Good for high-dimensional data or when regularization is needed.
-    - Requires `poissonreg` package.
+    - Implements regularized Poisson regression (lasso, ridge, elastic net), useful for high-dimensional data. Supports `penalty` and `mixture`.
+    - Requires the `poissonreg` extension package.
 * `h2o` (regression)
-    - A powerful, scalable engine for large datasets.
-    - Doesn't support regularization in this interface.
-    - Requires `agua` package.
+    - A scalable engine designed for very large datasets.
+    - Requires the `agua` extension package.
 * `gee` (regression)
-    - For correlated count data via Generalized Estimating Equations.
-    - Doesn't support regularization.
-    - Requires the `multilevelmod` package.
+    - For modeling correlated or clustered count data (e.g., longitudinal studies).
+    - Requires the `multilevelmod` extension package.
 * `glmer` (regression)
-    - For multilevel/hierarchical count data.
-    - Doesn't support regularization.
-    - Requires the `multilevelmod` package.
+    - For multilevel/hierarchical models with random effects.
+    - Requires the `multilevelmod` extension package.
 

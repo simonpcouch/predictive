@@ -1,37 +1,34 @@
 ## `linear_reg()`
 
-A standard linear regression model. Very fast to fit and serves as a good baseline.
+Linear regression is a fundamental, highly interpretable statistical method for predicting a numeric outcome. It is extremely fast to fit and serves as an excellent baseline model.
 
 Arguments:
-* `penalty`: The total amount of regularization. Tune.
-* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. Tune.
+* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using regularized engines (e.g., `glmnet`, `brulee`).
+* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using regularized engines.
 
 Engines:
 * `lm` (regression)
-    - The default engine, using ordinary least squares.
-    - Does not support `penalty` or `mixture`.
-    - No extension package needed.
+    - The default engine. A fast, standard implementation using ordinary least squares.
+    - No parsnip extension package is required.
 * `glm` (regression)
-    - Fits a generalized linear model without regularization.
-    - Does not support `penalty` or `mixture`.
-    - No extension package needed.
-* `brulee` (regression)
-    - A Torch-based engine that can leverage GPUs for speed.
-    - Supports `penalty` and `mixture`.
-    - No extension package needed.
+    - A standard, fast engine for generalized linear models, which includes linear regression.
+    - No parsnip extension package is required.
 * `glmnet` (regression)
-    - Fits a regularized generalized linear model.
-    - Supports `penalty` and `mixture`.
-    - No extension package needed.
-* `quantreg` (quantile regression)
-    - Models the conditional quantiles of the outcome, not the mean.
-    - Does not support `penalty` or `mixture`.
-    - No extension package needed.
+    - Supports regularized regression (lasso, ridge, and elastic net), which is useful for high-dimensional data and feature selection. Supports `penalty` and `mixture`.
+    - No parsnip extension package is required.
+* `brulee` (regression)
+    - A fast, Torch-based engine suitable for GPU acceleration, especially with large datasets. Supports `penalty` and `mixture`.
+    - No parsnip extension package is required.
 * `gee` (regression)
-    - For correlated data using Generalized Estimating Equations.
-    - Does not support `penalty` or `mixture`.
-    - Requires the `multilevelmod` package.
+    - For correlated or clustered data (e.g., longitudinal studies).
+    - Requires the `multilevelmod` extension package.
 * `glmer` (regression)
-    - For multilevel/hierarchical models.
-    - Does not support `penalty` or `mixture`.
-    - Requires the `multilevelmod` package.
+    - For multilevel/hierarchical models with random effects.
+    - Requires the `multilevelmod` extension package.
+* `quantreg` (quantile regression)
+    - For modeling specific quantiles of the outcome, not just the mean.
+    - No parsnip extension package is required.
+* `h2o` (regression)
+    - A fast, scalable engine for large datasets.
+    - Requires the `agua` extension package.
+

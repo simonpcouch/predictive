@@ -1,14 +1,14 @@
 ## `bag_mlp()`
 
-Bagged MLP for non-linear models. Slow to fit, but can be very accurate.
+Bagged multilayer perceptron (MLP) models are ensembles of single-layer neural networks. They are powerful for capturing complex non-linear patterns but are computationally intensive and slow to fit.
 
 Arguments:
-* `hidden_units`: Number of hidden units. Tune.
-* `penalty`: L2 regularization. Tune.
-* `epochs`: Number of training iterations. Tune.
+* `hidden_units`: The number of units in the hidden layer. It is recommended to tune this parameter.
+* `penalty`: The L2 regularization (weight decay) penalty. It is recommended to tune this parameter.
+* `epochs`: The number of training iterations. It is recommended to tune this parameter.
 
 Engines:
 * `nnet` (classification, regression)
-    - Good for complex, non-linear data.
-    - Requires the `baguette` package.
+    - A reliable engine for fitting bagged MLPs.
+    - Requires the `baguette` extension package.
 
