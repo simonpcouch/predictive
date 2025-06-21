@@ -34,3 +34,5 @@ Suggests:
     tidyverse
 Config/testthat/edition: 3
 License: MIT + file LICENSE
+URL: https://github.com/simonpcouch/modelbot
+BugReports: https://github.com/simonpcouch/modelbot/issues
