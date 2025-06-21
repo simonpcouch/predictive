@@ -1,0 +1,26 @@
+.env
+.DS_Store
+.Renviron
+data/
+__pycache__/
+reports
+logs/
+.Rproj.user
+
+# R package specific
+.Rhistory
+.RData
+.Ruserdata
+*.tar.gz
+*.Rcheck/
+.Rapp.history
+vignettes/*.html
+vignettes/*.pdf
+*_cache/
+/cache/
+*.utf8.md
+*.knit.md
+.httr-oauth
+*~
+.Rdata
+.quarto
