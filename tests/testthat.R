@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(databot)
+library(modelbot)
 
-test_check("databot")
+test_check("modelbot")

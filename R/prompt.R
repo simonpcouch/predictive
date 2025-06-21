@@ -1,4 +1,4 @@
-databot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
+modelbot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
   llms_txt <- NULL
   if (file.exists(here::here("llms.txt"))) {
     llms_txt <- paste(
@@ -7,7 +7,7 @@ databot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
     )
   }
 
-  template <- databot_prompt_template()
+  template <- modelbot_prompt_template()
 
   whisker::whisker.render(
     template,
@@ -19,10 +19,10 @@ databot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
   )
 }
 
-databot_prompt_template <- function() {
+modelbot_prompt_template <- function() {
   paste(
     readLines(
-      system.file("prompt/prompt.md", package = "databot"),
+      system.file("prompts/main.md", package = "modelbot"),
       encoding = "UTF-8",
       warn = FALSE
     ),

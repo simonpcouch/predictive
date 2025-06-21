@@ -1,23 +1,3 @@
-# Creates a Quarto report and displays it to the user
-#
-# @param filename The desired filename of the report. Should end in `.qmd`.
-# @param content The full content of the report, as a UTF-8 string.
-create_quarto_report <- function(filename, content) {
-  dir.create(here::here("reports"), showWarnings = FALSE)
-  dest <- file.path("reports", basename(filename))
-  # TODO: Ensure UTF-8 encoding, even on Windows
-  writeLines(content, dest)
-  message("Saved report to ", dest)
-  system2("quarto", c("render", dest))
-  # change extension to .html
-  rendered <- paste0(tools::file_path_sans_ext(dest), ".html")
-  if (file.exists(rendered)) {
-    message("Opening report in browser...")
-    utils::browseURL(rendered)
-  }
-  invisible(NULL)
-}
-
 # Executes R code in the current session
 #
 # @param code R code to execute

@@ -6,17 +6,17 @@ NULL
 
 html_deps <- function() {
   htmltools::htmlDependency(
-    "databot",
-    utils::packageVersion("databot"),
+    "modelbot",
+    utils::packageVersion("modelbot"),
     src = "www",
-    package = "databot",
+    package = "modelbot",
     stylesheet = "style.css"
   )
 }
 
 latest_session <- reactiveVal()
 
-#' Runs databot
+#' Runs modelbot
 #'
 #' @param new_session Logical. If `TRUE`, starts a new chat session. If `FALSE`
 #'   (the default), restores the previous chat session (only within the current

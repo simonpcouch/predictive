@@ -2,7 +2,7 @@
 % Please edit documentation in R/app.R
 \name{chat}
 \alias{chat}
-\title{Runs databot}
+\title{Runs modelbot}
 \usage{
 chat(new_session = FALSE)
 }
@@ -12,5 +12,5 @@ chat(new_session = FALSE)
 R process).}
 }
 \description{
-Runs databot
+Runs modelbot
 }
