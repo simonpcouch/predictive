@@ -1,5 +1,8 @@
 modelbot_client <- function(
-  chat = chat_google_gemini(model = "gemini-2.5-pro"),
+  chat = getOption(
+    "modelbot.chat",
+    default = chat_google_gemini(model = "gemini-2.5-pro")
+  ),
   default_turns = list()
 ) {
   # TODO: add more context on data splitting and some notes on when
