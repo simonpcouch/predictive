@@ -5,21 +5,6 @@ run_experiment <- function(
   resampling_fn,
   name
 ) {
-  # TODO: track elapsed time
-  withr::local_options(
-    error = function(e) {
-      ellmer::ContentToolResult(
-        error = conditionMessage(e),
-        extra = list(
-        script = mock_script(
-          recipe = recipe,
-          model = model,
-          resampling_fn = resampling_fn,
-          folds = folds
-        )
-      )
-    )
-  })
   preprocessor <- eval(parse(text = recipe))
   spec <- eval(parse(text = model))
   rlang::arg_match(resampling_fn, resampling_fns)
@@ -60,6 +45,40 @@ run_experiment <- function(
   )
 }
 
+run_experiment_safely <- function(
+ folds,
+ recipe,
+ model,
+ resampling_fn,
+ name
+) {
+ tryCatch({
+   run_experiment(folds, recipe, model, resampling_fn, name)
+ }, error = function(e) {
+   error_msg <- conditionMessage(e)
+   if (exists(".Last.tune.result")) {
+     # TODO: this may not actually be surfacing the right information
+     # if an experiment failed but did so outside of a tuning process
+     error_msg <- c(
+      error_msg,
+      capture.output(show_notes(.Last.tune.result))
+     )
+   }
+   
+   ellmer::ContentToolResult(
+     error = paste0(error_msg, collapse = "\n"),
+     extra = list(
+       script = mock_script(
+         recipe = recipe,
+         model = model,
+         resampling_fn = resampling_fn,
+         folds = folds
+       )
+     )
+   )
+ })
+}
+
 resampling_fns <- c(
   "fit_resamples",
   "tune_grid",
@@ -91,7 +110,7 @@ concatenate_directory <- function(dir) {
 
 tool_run_experiment <- 
   tool(
-    run_experiment,
+    run_experiment_safely,
     "Carries out a modeling experiment with tidymodels. This should be the
      _only_ mechanism by which the assistant actually fits models.",
     folds = type_string("The name of the resamples object."),
@@ -111,5 +130,6 @@ tool_run_experiment <-
       "Do not include parantheses after the function name."
     ), collapse = "\n")),
     name = type_string("A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."),
-    .convert = FALSE
+    .convert = FALSE,
+    .name = "run_experiment"
   )
