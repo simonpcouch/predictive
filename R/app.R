@@ -96,7 +96,7 @@ model_bot <- function(new_session = FALSE) {
           }
         ) |>
         promises::finally(
-          ~ {
+          function(...) {
             tokens <- chat$get_tokens(include_system_prompt = FALSE)
             input <- sum(tokens$tokens[tokens$role == "user"])
             output <- sum(tokens$tokens[tokens$role == "assistant"])

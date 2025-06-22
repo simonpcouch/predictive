@@ -2,7 +2,8 @@ run_experiment <- function(
   folds,
   recipe,
   model,
-  resampling_fn
+  resampling_fn,
+  name
 ) {
   # TODO: track elapsed time
   withr::local_options(
@@ -13,7 +14,8 @@ run_experiment <- function(
         script = mock_script(
           recipe = recipe,
           model = model,
-          resampling_fn = resampling_fn
+          resampling_fn = resampling_fn,
+          folds = folds
         )
       )
     )
@@ -36,18 +38,25 @@ run_experiment <- function(
     }
   )
 
+  # TODO: should this just run_r_code with mock_script() so that
+  # we get the same streaming "for free"?
   resampling_result <- rlang::eval_bare(cl)
   metrics <- tune::collect_metrics(resampling_result)
+  script <- mock_script(
+    folds = folds,
+    recipe = recipe,
+    model = model,
+    resampling_fn = resampling_fn
+  )
+
+  rlang::env_bind(
+    the,
+    !!name := list(script = script, metrics = metrics)
+  )
 
   ellmer::ContentToolResult(
     value = btw::btw_this(metrics, format = "json"),
-    extra = list(
-      script = mock_script(
-        recipe = recipe,
-        model = model,
-        resampling_fn = resampling_fn
-      )
-    )
+    extra = list(script = script)
   )
 }
 
@@ -59,10 +68,10 @@ resampling_fns <- c(
   "tune_sim_anneal"
 )
 
-mock_script <- function(recipe, model, resampling_fn) {
+mock_script <- function(recipe, model, resampling_fn, folds) {
   glue::glue(
 "{resampling_fn}(
-  resamples = folds,
+  resamples = {folds},
   object = {model},
   preprocessor = {recipe}
 )"
@@ -101,5 +110,6 @@ tool_run_experiment <-
        bet, as it is a more performant version of tune_grid.",
       "Do not include parantheses after the function name."
     ), collapse = "\n")),
+    name = type_string("A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."),
     .convert = FALSE
   )
