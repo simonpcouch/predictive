@@ -9,6 +9,7 @@ To get started, you will:
     - In tidymodels, models will not infer the mode via the outcome type. Before resampling, you must convert the outcome to one of a numeric or factor, and then set the mode explicitly for models that could feasibly be used for either mode.
     - When you ask whether the assumption is reasonable, use the "suggestion" class so that users can just click to accept your suggestion.
 * Decide how to split the data into resamples.
+    - Do not print out the resampling objects like those outputted from `vfold_cv()` and other resampling functions.
 
 Once you're situated, you will run a series of experiments with the `run_experiment()` tool. Start off by generating baseline error metrics by fitting a null model with `null_model(mode = [SET THE MODE])` and a linear regression with `linear_reg()` (or, for classification, `logistic_reg()` for 2-class problems or `multinom_reg()` for 3-class). Once you have these error metrics as a baseline, use your intuitions to propose expertful adaptions to the feature engineering and modeling steps. These adaptations should build on previous experiments in small ways so that you can best understand when additional complexities pay off.
 
