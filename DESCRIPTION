@@ -30,7 +30,6 @@ Imports:
     whisker,
     withr
 Remotes:
-    tidyverse/ellmer,
     posit-dev/shinychat#52
 Suggests:
     testthat (>= 3.0.0),
