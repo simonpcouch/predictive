@@ -5,12 +5,23 @@
 NULL
 
 html_deps <- function() {
-  htmltools::htmlDependency(
-    "modelbot",
-    utils::packageVersion("modelbot"),
-    src = "www",
-    package = "modelbot",
-    stylesheet = "style.css"
+  list(
+    htmltools::htmlDependency(
+      "modelbot",
+      utils::packageVersion("modelbot"),
+      src = "www",
+      package = "modelbot",
+      stylesheet = "style.css"
+    ),
+    # Tool calling UI dependencies from shinychat
+    htmltools::htmlDependency(
+      "shinychat-tools",
+      utils::packageVersion("shinychat"),
+      src = "tools",
+      package = "shinychat",
+      stylesheet = "tool-request.css",
+      script = "tool-request.js"
+    )
   )
 }
 
@@ -50,6 +61,7 @@ model_bot <- function(new_session = FALSE) {
       }
     })
 
+    chat <- modelbot_client(default_turns = globals$turns)
     restored_since_last_turn <- FALSE
 
     # Restore previous chat session, if applicable
@@ -62,9 +74,15 @@ model_bot <- function(new_session = FALSE) {
         chat_append_message("chat", msg, chunk = FALSE)
       }
       restored_since_last_turn <- TRUE
+    } else if (length(chat$get_turns()) > 0) {
+      client_msgs <- shinychat::contents_shinychat(chat)
+      if (length(client_msgs)) {
+        for (msg in client_msgs) {
+          chat_append_message("chat", msg, chunk = FALSE)
+        }
+        restored_since_last_turn <- TRUE
+      }
     }
-
-    chat <- modelbot_client(default_turns = globals$turns)
     start_chat_request <- function(user_input) {
       prefix <- if (restored_since_last_turn) {
         paste0(
@@ -76,40 +94,49 @@ model_bot <- function(new_session = FALSE) {
       }
       restored_since_last_turn <<- FALSE
 
-      stream <- save_stream_output()(
-        chat$stream_async(paste0(prefix, user_input))
-      )
-      chat_append("chat", stream) |>
-        promises::then(
-          ~ {
-            if (session$isClosed()) {
-              req(FALSE)
-            }
-
-            # After each successful turn, save everything in case we need to
-            # restore (i.e. user stops the app and restarts it)
-            globals$turns <- chat$get_turns()
-            save_messages(
-              list(role = "user", content = user_input),
-              list(role = "assistant", content = take_pending_output())
-            )
-          }
-        ) |>
-        promises::finally(
-          function(...) {
-            tokens <- chat$get_tokens(include_system_prompt = FALSE)
-            input <- sum(tokens$tokens[tokens$role == "user"])
-            output <- sum(tokens$tokens[tokens$role == "assistant"])
-
-            cat("\n")
-            cat(rule("Turn ", nrow(tokens) / 2), "\n", sep = "")
-            cat("Total input tokens:  ", input, "\n", sep = "")
-            cat("Total output tokens: ", output, "\n", sep = "")
-            cat("Total tokens:        ", input + output, "\n", sep = "")
-            cat("\n")
-            .last_chat <<- chat
-          }
+      # Set up tool result callback to hide tool requests when complete
+      clear_on_tool_result <- chat$on_tool_result(function(result) {
+        session <- shiny::getDefaultReactiveDomain()
+        if (is.null(session)) return()
+        session$sendCustomMessage(
+          "shinychat-hide-tool-request",
+          result@request@id
         )
+      })
+
+      stream <- save_stream_output()(
+        chat$stream_async(paste0(prefix, user_input), stream = "content")
+      )
+      
+      p <- chat_append("chat", stream)
+      p <- promises::then(p, function(x) {
+        if (session$isClosed()) {
+          req(FALSE)
+        }
+
+        # After each successful turn, save everything in case we need to
+        # restore (i.e. user stops the app and restarts it)
+        globals$turns <- chat$get_turns()
+        save_messages(
+          list(role = "user", content = user_input),
+          list(role = "assistant", content = take_pending_output())
+        )
+      })
+      promises::finally(p, function(...) {
+        clear_on_tool_result()
+        
+        tokens <- chat$get_tokens(include_system_prompt = FALSE)
+        input <- sum(tokens$tokens[tokens$role == "user"])
+        output <- sum(tokens$tokens[tokens$role == "assistant"])
+
+        cat("\n")
+        cat(rule("Turn ", nrow(tokens) / 2), "\n", sep = "")
+        cat("Total input tokens:  ", input, "\n", sep = "")
+        cat("Total output tokens: ", output, "\n", sep = "")
+        cat("Total tokens:        ", input + output, "\n", sep = "")
+        cat("\n")
+        .last_chat <<- chat
+      })
     }
 
     observeEvent(input$chat_user_input, {
@@ -145,6 +172,9 @@ save_messages <- function(...) {
 }
 
 save_output_chunk <- function(chunk) {
+  if (S7::S7_inherits(chunk, ellmer::Content)) {
+    chunk <- shinychat::contents_shinychat(chunk)
+  }
   globals$pending_output$add(chunk)
   invisible()
 }

@@ -22,6 +22,7 @@ Imports:
     promises,
     R6,
     rlang,
+    S7,
     shiny (>= 1.10.0),
     shinychat,
     tibble,
