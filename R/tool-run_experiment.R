@@ -5,43 +5,56 @@ run_experiment <- function(
   resampling_fn,
   name
 ) {
-  preprocessor <- eval(parse(text = recipe))
-  spec <- eval(parse(text = model))
   rlang::arg_match(resampling_fn, resampling_fns)
-
-  cl <- rlang::call2(
-    resampling_fn,
-    # TODO: maybe this needs to be cached and retrieved from somewhere.
-    # should this be its own tool call?
-    object = spec,
-    preprocessor = preprocessor,
-    resamples = get(folds),
-    .ns = if (resampling_fn %in% c("tune_race_anova", "tune_sim_anneal")) {
-      "finetune"
-    } else {
-      "tune"
-    }
-  )
-
-  # TODO: should this just run_r_code with mock_script() so that
-  # we get the same streaming "for free"?
-  resampling_result <- rlang::eval_bare(cl)
-  metrics <- tune::collect_metrics(resampling_result)
+  
   script <- mock_script(
     folds = folds,
     recipe = recipe,
     model = model,
     resampling_fn = resampling_fn
   )
+  
+  m <- mirai::mirai({
+    preprocessor <- eval(parse(text = recipe))
+    spec <- eval(parse(text = model))
+    
+    cl <- rlang::call2(
+      resampling_fn,
+      # TODO: maybe this needs to be cached and retrieved from somewhere.
+      # should this be its own tool call?
+      object = spec,
+      preprocessor = preprocessor,
+      resamples = get(folds),
+      .ns = if (resampling_fn %in% c("tune_race_anova", "tune_sim_anneal")) {
+        "finetune"
+      } else {
+        "tune"
+      }
+    )
 
-  rlang::env_bind(
-    the,
-    !!name := list(script = script, metrics = metrics)
+    # TODO: should this just run_r_code with mock_script() so that
+    # we get the same streaming "for free"?
+    resampling_result <- rlang::eval_bare(cl)
+    metrics <- tune::collect_metrics(resampling_result)
+    
+    list(metrics = metrics, script = script)
+  }, 
+  recipe = recipe,
+  model = model,
+  resampling_fn = resampling_fn,
+  folds = folds,
+  script = script
   )
-
+  
+  promises::then(m, function(result) {
+    rlang::env_bind(
+      the,
+      !!name := list(script = result$script, metrics = result$metrics)
+    )
+  })
+  
   ellmer::ContentToolResult(
-    value = btw::btw_this(metrics, format = "json"),
-    extra = list(script = script)
+    value = paste0("Experiment ", name, " running.")
   )
 }
 
