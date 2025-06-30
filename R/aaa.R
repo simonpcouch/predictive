@@ -17,3 +17,10 @@ running_experiments <- function() {
 new_experiments <- function() {
   names(Filter(function(exp) exp$status == "completed" && !exp$seen_by_model, the$experiments))
 }
+
+ordered_experiments <- function() {
+  if (length(the$experiments) == 0) return(character(0))
+  
+  start_times <- sapply(the$experiments, function(exp) exp$started_at)
+  names(the$experiments)[order(start_times, decreasing = TRUE)]
+}

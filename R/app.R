@@ -43,7 +43,18 @@ model_bot <- function(new_session = FALSE) {
 
   ui <- page_fillable(
     html_deps(),
-    chat_ui("chat", fill = TRUE, height = "100%", width = "100%")
+    layout_columns(
+      col_widths = c(7, 5),
+      chat_ui("chat", fill = TRUE, height = "100%"),
+      card(
+        card_header("Experiments"),
+        div(
+          id = "experiment-tracker",
+          style = "background-color: #f8f9fa; border-radius: 8px; padding: 16px; height: 100%; overflow-y: auto;",
+          uiOutput("experiment_cards")
+        )
+      )
+    )
   )
 
   server <- function(input, output, session) {
@@ -119,6 +130,23 @@ model_bot <- function(new_session = FALSE) {
         ""
       }
     }
+    
+    output$experiment_cards <- renderUI({
+      # TODO: how can i get this to run when experiments
+      # start and stop?
+
+      exp_names <- ordered_experiments()
+      if (length(exp_names) == 0) {
+        return(div(
+          style = "text-align: center; color: #666; margin-top: 20px;",
+          "No experiments yet."
+        ))
+      }
+      
+      lapply(exp_names, function(name) {
+        card_render_experiment(name, the$experiments[[name]])
+      })
+    })
 
     # Restore previous chat session, if applicable
     if (globals$ui_messages$size() > 0) {
