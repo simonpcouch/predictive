@@ -1,4 +1,4 @@
-modelbot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
+predictive_prompt <- function(has_project = TRUE, llms_txt = NULL) {
   llms_txt <- NULL
   if (file.exists(here::here("llms.txt"))) {
     llms_txt <- paste(
@@ -7,7 +7,7 @@ modelbot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
     )
   }
 
-  template <- modelbot_prompt_template()
+  template <- predictive_prompt_template()
 
   whisker::whisker.render(
     template,
@@ -19,10 +19,10 @@ modelbot_prompt <- function(has_project = TRUE, llms_txt = NULL) {
   )
 }
 
-modelbot_prompt_template <- function() {
+predictive_prompt_template <- function() {
   paste(
     readLines(
-      system.file("prompts/main.md", package = "modelbot"),
+      system.file("prompts/main.md", package = "predictive"),
       encoding = "UTF-8",
       warn = FALSE
     ),

@@ -177,7 +177,7 @@ mock_script <- function(recipe, model, resampling_fn, folds) {
 
 concatenate_directory <- function(dir) {
   files <- list.files(
-    system.file(paste0("context/", dir), package = "modelbot"),
+    system.file(paste0("context/", dir), package = "predictive"),
     full.names = TRUE
   )
   paste0(
@@ -195,11 +195,11 @@ tool_run_experiment <-
      and model specifications.",
     folds = type_string("The name of the resamples object."),
     recipe = type_string(paste0(c(
-      readLines(system.file("prompts/recipe.md", package = "modelbot")),
+      readLines(system.file("prompts/recipe.md", package = "predictive")),
       concatenate_directory("steps")
     ), collapse = "\n")),
     model = type_string(paste0(c(
-      readLines(system.file("prompts/model.md", package = "modelbot")),
+      readLines(system.file("prompts/model.md", package = "predictive")),
       concatenate_directory("models")
     ), collapse = "\n")),
     resampling_fn = type_string(paste0(c(

@@ -1,8 +1,8 @@
-# ModelBot - Asynchronous Tidymodels Assistant
+# predictive - Asynchronous Tidymodels Assistant
 
 ## Overview
 
-ModelBot is a Shiny application that provides an AI-powered chat interface for building tidymodels workflows. The core innovation is asynchronous experiment execution using mirai, allowing multiple model experiments to run in parallel without blocking the UI.
+predictive is a Shiny application that provides an AI-powered chat interface for building tidymodels workflows. The core innovation is asynchronous experiment execution using mirai, allowing multiple model experiments to run in parallel without blocking the UI.
 
 ## Key Components
 

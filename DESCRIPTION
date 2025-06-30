@@ -1,4 +1,4 @@
-Package: modelbot
+Package: predictive
 Title: Frontend For Predictive Modeling With 'tidymodels'
 Version: 0.0.0.0009
 Authors@R: c(
@@ -37,5 +37,5 @@ Suggests:
     tidyverse
 Config/testthat/edition: 3
 License: MIT + file LICENSE
-URL: https://github.com/simonpcouch/modelbot
-BugReports: https://github.com/simonpcouch/modelbot/issues
+URL: https://github.com/simonpcouch/predictive
+BugReports: https://github.com/simonpcouch/predictive/issues

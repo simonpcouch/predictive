@@ -7,10 +7,10 @@ NULL
 html_deps <- function() {
   list(
     htmltools::htmlDependency(
-      "modelbot",
-      utils::packageVersion("modelbot"),
+      "predictive",
+      utils::packageVersion("predictive"),
       src = "www",
-      package = "modelbot",
+      package = "predictive",
       stylesheet = "style.css"
     ),
     # Tool calling UI dependencies from shinychat
@@ -27,14 +27,14 @@ html_deps <- function() {
 
 latest_session <- reactiveVal()
 
-#' Runs modelbot
+#' Runs predictive
 #'
 #' @param new_session Logical. If `TRUE`, starts a new chat session. If `FALSE`
 #'   (the default), restores the previous chat session (only within the current
 #'   R process).
 #'
 #' @export
-model_bot <- function(new_session = FALSE) {
+predictive <- function(new_session = FALSE) {
   withr::local_envvar(NO_COLOR = "1")
 
   if (isTRUE(new_session)) {
@@ -72,7 +72,7 @@ model_bot <- function(new_session = FALSE) {
       }
     })
 
-    chat <- modelbot_client(default_turns = globals$turns)
+    chat <- predictive_client(default_turns = globals$turns)
     restored_since_last_turn <- FALSE
 
     chat_stream_task <- ExtendedTask$new(function(chat_client, full_input, user_input) {

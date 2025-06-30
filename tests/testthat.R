@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(modelbot)
+library(predictive)
 
-test_check("modelbot")
+test_check("predictive")
