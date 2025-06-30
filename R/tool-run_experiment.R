@@ -1,20 +1,21 @@
 run_experiment <- function(
-  folds,
+  .folds,
   recipe,
   model,
   resampling_fn,
   name,
+  purpose,
   synchronous = FALSE
 ) {
   rlang::arg_match(resampling_fn, resampling_fns)
   
   script <- mock_script(
-    folds = folds,
+    folds = .folds,
     recipe = recipe,
     model = model,
     resampling_fn = resampling_fn
   )
-  folds_obj <- get(folds)
+  folds_obj <- get(.folds)
 
   the$experiments[[name]] <- list(
     status = "running",
@@ -23,9 +24,10 @@ run_experiment <- function(
     error = NULL,
     started_at = Sys.time(),
     completed_at = NULL,
-    seen_by_model = FALSE
+    seen_by_model = FALSE,
+    purpose = purpose
   )
-
+  
   m <- mirai::mirai(
     {
       suppressPackageStartupMessages(library(tidymodels))
@@ -47,13 +49,30 @@ run_experiment <- function(
         .ns = .ns
       )
 
-      # TODO: should this just run_r_code with mock_script() so that
-      # we get the same streaming "for free"?
-      resampling_result <- rlang::eval_bare(cl)
-      metrics <- tune::collect_metrics(resampling_result)
+      # If the resampling fails in every fit, the tuning function will still
+      # return without error but the metric collection will fail and ask the 
+      # user to `show_notes()`; by the time the mirai has exited, the object
+      # it references is no longer around
+      resampling_result <- rlang::eval_bare(cl) 
+      tryCatch(
+        { 
+          metrics <- tune::collect_metrics(resampling_result)
+        },
+        error = function(e) {
+          error_msg <- conditionMessage(e)
+          if (grepl("All models failed", error_msg)) {
+            cli::cli_abort(
+              paste0(capture.output(show_notes(resampling_result)), collapse = "\n"),
+              parent = e
+            )
+          }
+          # otherwise, just raise it as-is
+          rlang::cnd_signal(e)
+        }
+      )
       
-      list(metrics = metrics, script = script)
-    }, 
+      list(metrics = metrics)
+      }, 
     list2env(as.list(environment()), global_env())
   )
   
@@ -85,9 +104,11 @@ run_experiment <- function(
   ellmer::ContentToolResult(
     value = paste0(c(
       "Experiment ", name, " running.\n\n",
-      "This is not a notification that the experiment finished; you will be ",
-      "automatically notified of experimental results when the experiment ",
-      "finishes. You cannot access experimental results by running R code."
+      "This is not a notification that the experiment finished; you will be 
+      notified of experimental results whenever the user replies to you. You 
+      cannot access experimental results by running R code. The user can
+      see when experiments finish; if you've launched a few experiments and
+      want to learn how they went, hand over control to the user."
     ), collapse = "")
   )
 }
@@ -98,10 +119,19 @@ run_experiment_safely <- function(
  model,
  resampling_fn,
  name,
+ purpose,
  synchronous = FALSE
 ) {
  tryCatch({
-   run_experiment(folds, recipe, model, resampling_fn, name, synchronous)
+   run_experiment(
+     .folds = folds,
+     recipe = recipe,
+     model = model,
+     resampling_fn = resampling_fn,
+     name = name,
+     purpose = purpose,
+     synchronous = synchronous
+   )
  }, error = function(e) {
    error_msg <- conditionMessage(e)
    if (exists(".Last.tune.result")) {
@@ -180,6 +210,7 @@ tool_run_experiment <-
       "Do not include parantheses after the function name."
     ), collapse = "\n")),
     name = type_string("A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."),
+    purpose = type_string("A 5-word-or-less description of what's being newly explored in the experiment. This will be shown to the user alongside the name; using words that aren't redundant with the name is preferred."),
     synchronous = type_boolean(paste0(c(
       "Whether the experiment should be run synchronously or not.",
       "The first experiments, with a null model and baseline fit, should ",

@@ -11,7 +11,7 @@ test_that("run_experiment returns ContentToolResult with expected structure", {
   withr::defer(rm("cv_folds", envir = .GlobalEnv))
   
   result <- run_experiment(
-    folds = "cv_folds",
+    .folds = "cv_folds",
     recipe = "recipes::recipe(mpg ~ ., data = mtcars)",
     model = "parsnip::null_model() %>% parsnip::set_engine('parsnip') %>% parsnip::set_mode('regression')",
     resampling_fn = "fit_resamples",

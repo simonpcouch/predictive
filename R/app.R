@@ -43,7 +43,18 @@ model_bot <- function(new_session = FALSE) {
 
   ui <- page_fillable(
     html_deps(),
-    chat_ui("chat", fill = TRUE, height = "100%", width = "100%")
+    layout_columns(
+      col_widths = c(7, 5),
+      chat_ui("chat", fill = TRUE, height = "100%"),
+      card(
+        card_header("Experiments"),
+        div(
+          id = "experiment-tracker",
+          style = "background-color: #f8f9fa; border-radius: 8px; padding: 16px; height: 100%; overflow-y: auto;",
+          uiOutput("experiment_cards")
+        )
+      )
+    )
   )
 
   server <- function(input, output, session) {
@@ -63,6 +74,34 @@ model_bot <- function(new_session = FALSE) {
 
     chat <- modelbot_client(default_turns = globals$turns)
     restored_since_last_turn <- FALSE
+
+    chat_stream_task <- ExtendedTask$new(function(chat_client, full_input, user_input) {
+      clear_on_tool_result <- chat_client$on_tool_result(function(result) {
+        session <- shiny::getDefaultReactiveDomain()
+        if (is.null(session)) return()
+        session$sendCustomMessage(
+          "shinychat-hide-tool-request",
+          result@request@id
+        )
+      })
+      
+      stream <- save_stream_output()(
+        chat_client$stream_async(full_input, stream = "content")
+      )
+      
+      p <- chat_append("chat", stream)
+      promises::then(
+        promises::finally(p, function(...) {
+          clear_on_tool_result()
+        }),
+        function(x) {
+          if (session$isClosed()) {
+            req(FALSE)
+          }
+          list(user_input = user_input)
+        }
+      )
+    })
     
     observeEvent(new_experiments(), {
       if (length(new_experiments()) > 0) {
@@ -119,6 +158,52 @@ model_bot <- function(new_session = FALSE) {
         ""
       }
     }
+    
+    experiment_state_hash <- reactiveVal("")
+    experiment_cards_reactive <- reactiveVal(div(
+      style = "text-align: center; color: #666; margin-top: 20px;",
+      "No experiments yet."
+    ))
+    
+    experiment_timer <- reactive({
+      if (length(running_experiments()) > 0) {
+        invalidateLater(50)
+      } else {
+        invalidateLater(1000)
+      }
+      Sys.time()
+    })
+    
+    observe({
+      experiment_timer()
+      
+      exp_names <- ordered_experiments()
+      current_hash <- rlang::hash(list(
+        names = exp_names,
+        experiments = the$experiments[exp_names]
+      ))
+      
+      if (!identical(current_hash, experiment_state_hash())) {
+        experiment_state_hash(current_hash)
+        
+        new_ui <- if (length(exp_names) == 0) {
+          div(
+            style = "text-align: center; color: #666; margin-top: 20px;",
+            "No experiments yet."
+          )
+        } else {
+          lapply(exp_names, function(name) {
+            card_render_experiment(name, the$experiments[[name]])
+          })
+        }
+        
+        experiment_cards_reactive(new_ui)
+      }
+    })
+    
+    output$experiment_cards <- renderUI({
+      experiment_cards_reactive()
+    })
 
     # Restore previous chat session, if applicable
     if (globals$ui_messages$size() > 0) {
@@ -157,38 +242,15 @@ model_bot <- function(new_session = FALSE) {
       }
       
       full_input <- paste0(prefix, user_input, experiment_results)
+      chat_stream_task$invoke(chat, full_input, user_input)
+    }
 
-      # Set up tool result callback to hide tool requests when complete
-      clear_on_tool_result <- chat$on_tool_result(function(result) {
-        session <- shiny::getDefaultReactiveDomain()
-        if (is.null(session)) return()
-        session$sendCustomMessage(
-          "shinychat-hide-tool-request",
-          result@request@id
-        )
-      })
-
-      stream <- save_stream_output()(
-        chat$stream_async(full_input, stream = "content")
-      )
-      
-      p <- chat_append("chat", stream)
-      p <- promises::then(p, function(x) {
-        if (session$isClosed()) {
-          req(FALSE)
-        }
-
-        # After each successful turn, save everything in case we need to
-        # restore (i.e. user stops the app and restarts it)
-        globals$turns <- chat$get_turns()
-        save_messages(
-          list(role = "user", content = user_input),
-          list(role = "assistant", content = take_pending_output())
-        )
-      })
-      promises::finally(p, function(...) {
-        clear_on_tool_result()
-        
+    observeEvent(input$chat_user_input, {
+      start_chat_request(input$chat_user_input)
+    })
+    
+    observeEvent(chat_stream_task$status(), {
+      if (chat_stream_task$status() == "success") {
         tokens <- chat$get_tokens(include_system_prompt = FALSE)
         input <- sum(tokens$tokens[tokens$role == "user"])
         output <- sum(tokens$tokens[tokens$role == "assistant"])
@@ -200,12 +262,14 @@ model_bot <- function(new_session = FALSE) {
         cat("Total tokens:        ", input + output, "\n", sep = "")
         cat("\n")
         .last_chat <<- chat
-      })
-    }
-
-    observeEvent(input$chat_user_input, {
-      start_chat_request(input$chat_user_input)
-    })
+        
+        globals$turns <- chat$get_turns()
+        save_messages(
+          list(role = "user", content = chat_stream_task$result()$user_input),
+          list(role = "assistant", content = take_pending_output())
+        )
+      }
+    }, ignoreInit = TRUE)
 
     # Kick start the chat session (unless we've restored a previous session)
     if (length(chat$get_turns()) == 0) {

@@ -29,6 +29,9 @@ For future AI assistants working on this project, read these help pages via btw 
 * `ellmer::Chat()`
 * `ellmer::tool()`
 * `shinychat::chat_ui()`
+* `shiny::ExtendedTask`
+
+Also, web fetch for this: https://mirai.r-lib.org/articles/mirai-promises.html
 
 ## Architecture Notes
 
