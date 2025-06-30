@@ -2,9 +2,9 @@ card_render_experiment <- function(name, exp) {
   status_icon <- if (exp$status == "running") {
     tags$i(class = "fa fa-spinner fa-spin", style = "color: #6c757d;")
   } else if (!is.null(exp$error)) {
-    tags$i(class = "fa fa-times", style = "color: #dc3545;")
+    HTML("<span style=\"color: #dc3545;\">✖</span>")
   } else {
-    tags$i(class = "fa fa-check", style = "color: #28a745;")
+    HTML("<span style=\"color: #28a745;\">✔</span>")
   }
   
   duration <- card_duration(exp)
@@ -32,6 +32,10 @@ card_render_experiment <- function(name, exp) {
       style = "font-weight: 500; margin-bottom: 8px;",
       name
     ),
+    div(
+      style = "font-style: italic; color: #666; margin-bottom: 8px;",
+      exp$purpose
+    ),
     if (metrics_display != "") div(
       style = "font-size: 12px; color: #666; text-align: right;",
       HTML(metrics_display)
@@ -53,34 +57,56 @@ card_best_label <- function(name, exp) {
   if (exp$status != "completed" || !is.null(exp$error) || is.null(exp$metrics)) {
     return("")
   }
-  
-  completed_exps <- Filter(function(e) e$status == "completed" && is.null(e$error) && !is.null(e$metrics), the$experiments)
-  if (length(completed_exps) <= 1) return("")
-  
-  metric_col <- if ("rmse" %in% names(exp$metrics)) {
-    "rmse"
-  } else if ("roc_auc" %in% names(exp$metrics)) {
-    "roc_auc"
-  } else {
-    return("")
+
+  other_exps <- the$experiments
+  other_exps[[name]] <- NULL
+  other_exps <- Filter(function(e) e$status == "completed" && is.null(e$error) && !is.null(e$metrics), other_exps)
+
+  metric_info <- list(
+    rmse = list(higher_is_better = FALSE),
+    rsq = list(higher_is_better = TRUE),
+    roc_auc = list(higher_is_better = TRUE),
+    accuracy = list(higher_is_better = TRUE)
+  )
+
+  for (metric_name in exp$metrics$.metric) {
+    if (!metric_name %in% names(metric_info)) {
+      next
+    }
+
+    current_value <- exp$metrics[exp$metrics$.metric == metric_name, ]$mean[1]
+
+    if (is.na(current_value)) {
+      next
+    }
+
+    higher_is_better <- metric_info[[metric_name]]$higher_is_better
+    is_best_for_this_metric <- TRUE
+
+    for (other_exp in other_exps) {
+      if (metric_name %in% other_exp$metrics$.metric) {
+        other_value <- other_exp$metrics[other_exp$metrics$.metric == metric_name, ]$mean[1]
+
+        if (is.na(other_value)) {
+          next
+        }
+
+        if (higher_is_better && other_value > current_value) {
+          is_best_for_this_metric <- FALSE
+          break
+        } else if (!higher_is_better && other_value < current_value) {
+          is_best_for_this_metric <- FALSE
+          break
+        }
+      }
+    }
+
+    if (is_best_for_this_metric) {
+      return("New best!")
+    }
   }
-  
-  current_value <- exp$metrics[[metric_col]][1]
-  
-  for (other_exp in completed_exps) {
-    if (identical(other_exp, exp)) next
-    other_value <- other_exp$metrics[[metric_col]][1]
-    
-    is_worse <- switch(metric_col,
-      "rmse" = other_value < current_value,
-      "roc_auc" = other_value > current_value,
-      FALSE
-    )
-    
-    if (is_worse) return("")
-  }
-  
-  "Current best!"
+
+  return("")
 }
 
 card_metrics_display <- function(exp) {
@@ -91,18 +117,27 @@ card_metrics_display <- function(exp) {
   metrics <- exp$metrics
   parts <- character(0)
   
-  for (metric in c("rmse", "rsq", "roc_auc", "accuracy")) {
-    if (metric %in% names(metrics)) {
-      value <- round(metrics[[metric]][1], 3)
-      label <- switch(metric,
-        "rmse" = "RMSE",
-        "rsq" = "R²",
-        "roc_auc" = "ROC AUC",
-        "accuracy" = "Accuracy"
-      )
-      parts <- c(parts, paste0(label, ": ", value))
-    }
+  display_metrics <- c("rmse", "rsq", "roc_auc", "accuracy")
+  metrics_to_display <- metrics[metrics$.metric %in% display_metrics, ]
+
+  if (nrow(metrics_to_display) == 0) {
+    return("")
   }
-  
+
+  for (i in 1:nrow(metrics_to_display)) {
+    metric_row <- metrics_to_display[i, ]
+    metric_name <- metric_row$.metric
+    value <- round(metric_row$mean, 3)
+    
+    label <- switch(metric_name,
+      "rmse" = "RMSE",
+      "rsq" = "R²",
+      "roc_auc" = "ROC AUC",
+      "accuracy" = "Accuracy",
+      metric_name
+    )
+    parts <- c(parts, paste0(label, ": ", value))
+  }
+
   paste(parts, collapse = "<br>")
 }

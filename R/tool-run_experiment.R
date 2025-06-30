@@ -4,6 +4,7 @@ run_experiment <- function(
   model,
   resampling_fn,
   name,
+  purpose,
   synchronous = FALSE
 ) {
   rlang::arg_match(resampling_fn, resampling_fns)
@@ -23,7 +24,8 @@ run_experiment <- function(
     error = NULL,
     started_at = Sys.time(),
     completed_at = NULL,
-    seen_by_model = FALSE
+    seen_by_model = FALSE,
+    purpose = purpose
   )
   
   m <- mirai::mirai(
@@ -117,6 +119,7 @@ run_experiment_safely <- function(
  model,
  resampling_fn,
  name,
+ purpose,
  synchronous = FALSE
 ) {
  tryCatch({
@@ -126,6 +129,7 @@ run_experiment_safely <- function(
      model = model,
      resampling_fn = resampling_fn,
      name = name,
+     purpose = purpose,
      synchronous = synchronous
    )
  }, error = function(e) {
@@ -206,6 +210,7 @@ tool_run_experiment <-
       "Do not include parantheses after the function name."
     ), collapse = "\n")),
     name = type_string("A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."),
+    purpose = type_string("A 5-word-or-less description of what's being newly explored in the experiment. This will be shown to the user alongside the name; using words that aren't redundant with the name is preferred."),
     synchronous = type_boolean(paste0(c(
       "Whether the experiment should be run synchronously or not.",
       "The first experiments, with a null model and baseline fit, should ",
