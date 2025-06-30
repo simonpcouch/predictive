@@ -1,6 +1,6 @@
 library(recipes)
 
-steps <- 
+steps <-
   ls("package:recipes") |>
   stringr::str_subset("^step_") |>
   sort()
@@ -21,8 +21,12 @@ for (step in steps) {
 
   ch_ <- ch$clone()
   ch_$chat(
-    paste0("Your task is to write the most succint documentation possible for the 
-     tidymodels preprocessing step ", step, "."),
+    paste0(
+      "Your task is to write the most succint documentation possible for the 
+     tidymodels preprocessing step ",
+      step,
+      "."
+    ),
     "",
     "Provide the documentation in this format:
 
@@ -40,8 +44,12 @@ Exclude the '----' from the actual resulting file. Those are just for clear sepa
 
 The arguments `...`, `role`, `trained`, `skip`, and `id` are common to all steps and should be excluded from the documentation.
 ",
-    paste0("Write the documentation to the file path ", file.path("inst", "context", "steps", paste0(step, ".md")), " with the provided tool."),
-    "If the step is deprecated, just note this to the user and don't write to file.", 
+    paste0(
+      "Write the documentation to the file path ",
+      file.path("inst", "context", "steps", paste0(step, ".md")),
+      " with the provided tool."
+    ),
+    "If the step is deprecated, just note this to the user and don't write to file.",
     "Be succinct in the documentation you write. Information-richness is the goal.",
     "This is relatively uncommon, but if the fit time for a step is greatly affected by an argument value, note it in the description of the argument.",
     do.call(

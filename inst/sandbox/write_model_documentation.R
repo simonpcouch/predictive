@@ -11,7 +11,20 @@ relevant_models <-
   parsnip:::model_info_table %>%
   filter(mode %in% c("classification", "regression")) %>%
   filter(!model %in% "auto_ml") %>%
-  filter(!engine %in% c("agua", "liquidSVM", "glmer", "gee", "lmer", "lme", "spark", "stan_glmer", "mgcv"))
+  filter(
+    !engine %in%
+      c(
+        "agua",
+        "liquidSVM",
+        "glmer",
+        "gee",
+        "lmer",
+        "lme",
+        "spark",
+        "stan_glmer",
+        "mgcv"
+      )
+  )
 
 model_types <- sort(unique(relevant_models$model))
 
@@ -27,8 +40,12 @@ for (model_type in model_types) {
   ))
 
   ch$clone()$chat(
-    paste0("Your task is to write the most succint documentation possible for the 
-     tidymodels modeling function ", model_type, "."),
+    paste0(
+      "Your task is to write the most succint documentation possible for the 
+     tidymodels modeling function ",
+      model_type,
+      "."
+    ),
     "You will be provided some context on the modes, engines, and required extension
     packages for each model type. If the `pkg` is NA or `parsnip`, then no 
     additional packages are needed.",
@@ -54,7 +71,11 @@ Engines:
 
 Exclude the '----' from the actual resulting file. Those are just for clear separation here.
 ",
-    paste0("Write the documentation to the file path ", file.path("inst", "context", "models", paste0(model_type, ".md")), " with the provided tool."),
+    paste0(
+      "Write the documentation to the file path ",
+      file.path("inst", "context", "models", paste0(model_type, ".md")),
+      " with the provided tool."
+    ),
     "Be succinct in the documentation you write. Information-richness is the goal.",
     "Use your own knowledge to describe the speed of fitting. e.g. decision trees
     are generally fast-fitting, random forests less so.",
@@ -69,6 +90,5 @@ Exclude the '----' from the actual resulting file. Those are just for clear sepa
         )
       )
     )
-
   )
 }

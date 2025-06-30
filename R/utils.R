@@ -2,10 +2,16 @@
 #' @param code Character string containing R code to evaluate
 #' @return List containing structured output information
 #' @noRd
-evaluate_r_code <- function(code, on_console_out, on_console_err, on_plot, on_dataframe) {
+evaluate_r_code <- function(
+  code,
+  on_console_out,
+  on_console_err,
+  on_plot,
+  on_dataframe
+) {
   cat("Running code...\n")
   cat(code, "\n", sep = "")
-  
+
   # Evaluate the code and capture all outputs
   evaluate::evaluate(
     code,
@@ -47,7 +53,7 @@ evaluate_r_code <- function(code, on_console_out, on_console_err, on_plot, on_da
 }
 
 #' Save a recorded plot to base64 encoded PNG
-#' 
+#'
 #' @param recorded_plot Recorded plot to save
 #' @param ... Additional arguments passed to [png()]
 #' @noRd
@@ -64,7 +70,7 @@ recorded_plot_to_png <- function(recorded_plot, ...) {
       grDevices::dev.off()
     }
   )
-  
+
   # Convert the plot to base64
   plot_data <- base64enc::base64encode(plot_file)
   list(mime = "image/png", content = plot_data)
@@ -88,7 +94,10 @@ split_df <- function(n, show_start = 20, show_end = 10) {
 
 encode_df_for_model <- function(df, max_rows = 20, show_end = 10) {
   if (nrow(df) == 0) {
-    return(paste(collapse = "\n", utils::capture.output(print(tibble::as.tibble(df)))))
+    return(paste(
+      collapse = "\n",
+      utils::capture.output(print(tibble::as.tibble(df)))
+    ))
   }
 
   split <- split_df(nrow(df), show_start = max_rows, show_end = show_end)
@@ -97,11 +106,14 @@ encode_df_for_model <- function(df, max_rows = 20, show_end = 10) {
     return(df_to_json(df))
   }
 
-  paste(collapse = "\n", c(
-    df_to_json(head(df, split$head)),
-    sprintf("... %d rows omitted ...", split$skip),
-    df_to_json(tail(df, split$tail))
-  ))
+  paste(
+    collapse = "\n",
+    c(
+      df_to_json(head(df, split$head)),
+      sprintf("... %d rows omitted ...", split$skip),
+      df_to_json(tail(df, split$tail))
+    )
+  )
 }
 
 df_to_json <- function(df) {

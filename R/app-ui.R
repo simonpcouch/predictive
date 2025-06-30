@@ -6,12 +6,13 @@ card_render_experiment <- function(name, exp) {
   } else {
     HTML("<span style=\"color: #28a745;\">✔</span>")
   }
-  
+
   duration <- card_duration(exp)
   best_label <- card_best_label(name, exp)
-  baseline_label <- if (grepl("null", name, ignore.case = TRUE)) "baseline" else ""
+  baseline_label <- if (grepl("null", name, ignore.case = TRUE)) "baseline" else
+    ""
   metrics_display <- card_metrics_display(exp)
-  
+
   div(
     class = "experiment-card",
     style = "background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);",
@@ -25,7 +26,8 @@ card_render_experiment <- function(name, exp) {
       div(
         style = "display: flex; gap: 8px; font-size: 12px;",
         if (baseline_label != "") span(baseline_label, style = "color: #666;"),
-        if (best_label != "") span(best_label, style = "color: #28a745; font-weight: bold;")
+        if (best_label != "")
+          span(best_label, style = "color: #28a745; font-weight: bold;")
       )
     ),
     div(
@@ -36,10 +38,11 @@ card_render_experiment <- function(name, exp) {
       style = "font-style: italic; color: #666; margin-bottom: 8px;",
       exp$purpose
     ),
-    if (metrics_display != "") div(
-      style = "font-size: 12px; color: #666; text-align: right;",
-      HTML(metrics_display)
-    )
+    if (metrics_display != "")
+      div(
+        style = "font-size: 12px; color: #666; text-align: right;",
+        HTML(metrics_display)
+      )
   )
 }
 
@@ -47,20 +50,33 @@ card_duration <- function(exp) {
   if (exp$status == "running") {
     "..."
   } else if (!is.null(exp$started_at) && !is.null(exp$completed_at)) {
-    paste0(round(as.numeric(difftime(exp$completed_at, exp$started_at, units = "secs"))), "s")
+    paste0(
+      round(as.numeric(difftime(
+        exp$completed_at,
+        exp$started_at,
+        units = "secs"
+      ))),
+      "s"
+    )
   } else {
     ""
   }
 }
 
 card_best_label <- function(name, exp) {
-  if (exp$status != "completed" || !is.null(exp$error) || is.null(exp$metrics)) {
+  if (
+    exp$status != "completed" || !is.null(exp$error) || is.null(exp$metrics)
+  ) {
     return("")
   }
 
   other_exps <- the$experiments
   other_exps[[name]] <- NULL
-  other_exps <- Filter(function(e) e$status == "completed" && is.null(e$error) && !is.null(e$metrics), other_exps)
+  other_exps <- Filter(
+    function(e)
+      e$status == "completed" && is.null(e$error) && !is.null(e$metrics),
+    other_exps
+  )
 
   metric_info <- list(
     rmse = list(higher_is_better = FALSE),
@@ -85,7 +101,9 @@ card_best_label <- function(name, exp) {
 
     for (other_exp in other_exps) {
       if (metric_name %in% other_exp$metrics$.metric) {
-        other_value <- other_exp$metrics[other_exp$metrics$.metric == metric_name, ]$mean[1]
+        other_value <- other_exp$metrics[
+          other_exp$metrics$.metric == metric_name,
+        ]$mean[1]
 
         if (is.na(other_value)) {
           next
@@ -110,13 +128,15 @@ card_best_label <- function(name, exp) {
 }
 
 card_metrics_display <- function(exp) {
-  if (exp$status != "completed" || is.null(exp$metrics) || !is.null(exp$error)) {
+  if (
+    exp$status != "completed" || is.null(exp$metrics) || !is.null(exp$error)
+  ) {
     return("")
   }
-  
+
   metrics <- exp$metrics
   parts <- character(0)
-  
+
   display_metrics <- c("rmse", "rsq", "roc_auc", "accuracy")
   metrics_to_display <- metrics[metrics$.metric %in% display_metrics, ]
 
@@ -128,8 +148,9 @@ card_metrics_display <- function(exp) {
     metric_row <- metrics_to_display[i, ]
     metric_name <- metric_row$.metric
     value <- round(metric_row$mean, 3)
-    
-    label <- switch(metric_name,
+
+    label <- switch(
+      metric_name,
       "rmse" = "RMSE",
       "rsq" = "R²",
       "roc_auc" = "ROC AUC",
