@@ -25,7 +25,7 @@ run_experiment <- function(
     completed_at = NULL,
     seen_by_model = FALSE
   )
-
+  
   m <- mirai::mirai(
     {
       suppressPackageStartupMessages(library(tidymodels))
@@ -102,9 +102,11 @@ run_experiment <- function(
   ellmer::ContentToolResult(
     value = paste0(c(
       "Experiment ", name, " running.\n\n",
-      "This is not a notification that the experiment finished; you will be ",
-      "automatically notified of experimental results when the experiment ",
-      "finishes. You cannot access experimental results by running R code."
+      "This is not a notification that the experiment finished; you will be 
+      notified of experimental results whenever the user replies to you. You 
+      cannot access experimental results by running R code. The user can
+      see when experiments finish; if you've launched a few experiments and
+      want to learn how they went, hand over control to the user."
     ), collapse = "")
   )
 }
