@@ -1,5 +1,5 @@
 run_experiment <- function(
-  folds,
+  .folds,
   recipe,
   model,
   resampling_fn,
@@ -9,12 +9,12 @@ run_experiment <- function(
   rlang::arg_match(resampling_fn, resampling_fns)
   
   script <- mock_script(
-    folds = folds,
+    folds = .folds,
     recipe = recipe,
     model = model,
     resampling_fn = resampling_fn
   )
-  folds_obj <- get(folds)
+  folds_obj <- get(.folds)
 
   the$experiments[[name]] <- list(
     status = "running",
@@ -47,13 +47,30 @@ run_experiment <- function(
         .ns = .ns
       )
 
-      # TODO: should this just run_r_code with mock_script() so that
-      # we get the same streaming "for free"?
-      resampling_result <- rlang::eval_bare(cl)
-      metrics <- tune::collect_metrics(resampling_result)
+      # If the resampling fails in every fit, the tuning function will still
+      # return without error but the metric collection will fail and ask the 
+      # user to `show_notes()`; by the time the mirai has exited, the object
+      # it references is no longer around
+      resampling_result <- rlang::eval_bare(cl) 
+      tryCatch(
+        { 
+          metrics <- tune::collect_metrics(resampling_result)
+        },
+        error = function(e) {
+          error_msg <- conditionMessage(e)
+          if (grepl("All models failed", error_msg)) {
+            cli::cli_abort(
+              paste0(capture.output(show_notes(resampling_result)), collapse = "\n"),
+              parent = e
+            )
+          }
+          # otherwise, just raise it as-is
+          rlang::cnd_signal(e)
+        }
+      )
       
-      list(metrics = metrics, script = script)
-    }, 
+      list(metrics = metrics)
+      }, 
     list2env(as.list(environment()), global_env())
   )
   
@@ -101,7 +118,14 @@ run_experiment_safely <- function(
  synchronous = FALSE
 ) {
  tryCatch({
-   run_experiment(folds, recipe, model, resampling_fn, name, synchronous)
+   run_experiment(
+     .folds = folds,
+     recipe = recipe,
+     model = model,
+     resampling_fn = resampling_fn,
+     name = name,
+     synchronous = synchronous
+   )
  }, error = function(e) {
    error_msg <- conditionMessage(e)
    if (exists(".Last.tune.result")) {
