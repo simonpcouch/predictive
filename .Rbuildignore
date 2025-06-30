@@ -17,3 +17,5 @@
 ^codecov\.yml$
 inst/sandbox
 CLAUDE.md
+^[\.]?air\.toml$
+^\.vscode$
