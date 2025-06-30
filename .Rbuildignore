@@ -16,3 +16,4 @@
 ^\.github$
 ^codecov\.yml$
 inst/sandbox
+CLAUDE.md
