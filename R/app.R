@@ -63,6 +63,62 @@ model_bot <- function(new_session = FALSE) {
 
     chat <- modelbot_client(default_turns = globals$turns)
     restored_since_last_turn <- FALSE
+    
+    observeEvent(new_experiments(), {
+      if (length(new_experiments()) > 0) {
+        showNotification(
+          "New experiment results available! Send any message to notify the model.",
+          type = "message",
+          duration = NULL
+        )
+      }
+    }, ignoreInit = TRUE)
+
+    format_single_experiment <- function(name, exp) {
+      parts <- c(
+        paste0("### Experiment: ", name),
+        "**Script:**",
+        paste0("```r\n", exp$script, "\n```")
+      )
+      
+      if (!is.null(exp$error)) {
+        parts <- c(parts, "**Error:**", paste0("```\n", exp$error, "\n```"))
+      } else if (!is.null(exp$metrics)) {
+        parts <- c(parts, "**Metrics:**", btw::btw_this(exp$metrics, format = "json"))
+      }
+      
+      c(parts, "")
+    }
+
+    format_experiment_results <- function() {
+      completed_experiments <- names(Filter(function(exp) exp$status == "completed", the$experiments))
+      if (length(completed_experiments) == 0) return("")
+      
+      new_exp_names <- new_experiments()
+      old_exp_names <- setdiff(completed_experiments, new_exp_names)
+      
+      res <- character(0)
+      
+      if (length(old_exp_names) > 0) {
+        res <- c(res, "## Previous Experiment Results")
+        for (name in old_exp_names) {
+          res <- c(res, format_single_experiment(name, the$experiments[[name]]))
+        }
+      }
+      
+      if (length(new_exp_names) > 0) {
+        res <- c(res, "## New Experiment Results")
+        for (name in new_exp_names) {
+          res <- c(res, format_single_experiment(name, the$experiments[[name]]))
+        }
+      }
+      
+      if (length(res) > 0) {
+        paste0("\n\n---\n\n", paste(res, collapse = "\n"), "\n---\n\n")
+      } else {
+        ""
+      }
+    }
 
     # Restore previous chat session, if applicable
     if (globals$ui_messages$size() > 0) {
@@ -93,6 +149,14 @@ model_bot <- function(new_session = FALSE) {
         ""
       }
       restored_since_last_turn <<- FALSE
+      
+      experiment_results <- format_experiment_results()
+      .last_experiment_results_shown <<- experiment_results
+      for (name in new_experiments()) {
+        the$experiments[[name]]$seen_by_model <- TRUE
+      }
+      
+      full_input <- paste0(prefix, user_input, experiment_results)
 
       # Set up tool result callback to hide tool requests when complete
       clear_on_tool_result <- chat$on_tool_result(function(result) {
@@ -105,7 +169,7 @@ model_bot <- function(new_session = FALSE) {
       })
 
       stream <- save_stream_output()(
-        chat$stream_async(paste0(prefix, user_input), stream = "content")
+        chat$stream_async(full_input, stream = "content")
       )
       
       p <- chat_append("chat", stream)
