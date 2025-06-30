@@ -3,7 +3,8 @@ run_experiment <- function(
   recipe,
   model,
   resampling_fn,
-  name
+  name,
+  synchronous = FALSE
 ) {
   rlang::arg_match(resampling_fn, resampling_fns)
   
@@ -13,48 +14,81 @@ run_experiment <- function(
     model = model,
     resampling_fn = resampling_fn
   )
-  
-  m <- mirai::mirai({
-    preprocessor <- eval(parse(text = recipe))
-    spec <- eval(parse(text = model))
-    
-    cl <- rlang::call2(
-      resampling_fn,
-      # TODO: maybe this needs to be cached and retrieved from somewhere.
-      # should this be its own tool call?
-      object = spec,
-      preprocessor = preprocessor,
-      resamples = get(folds),
-      .ns = if (resampling_fn %in% c("tune_race_anova", "tune_sim_anneal")) {
-        "finetune"
-      } else {
-        "tune"
-      }
-    )
+  folds_obj <- get(folds)
 
-    # TODO: should this just run_r_code with mock_script() so that
-    # we get the same streaming "for free"?
-    resampling_result <- rlang::eval_bare(cl)
-    metrics <- tune::collect_metrics(resampling_result)
-    
-    list(metrics = metrics, script = script)
-  }, 
-  recipe = recipe,
-  model = model,
-  resampling_fn = resampling_fn,
-  folds = folds,
-  script = script
+  the$experiments[[name]] <- list(
+    status = "running",
+    script = script,
+    metrics = NULL,
+    error = NULL,
+    started_at = Sys.time(),
+    completed_at = NULL,
+    seen_by_model = FALSE
+  )
+
+  m <- mirai::mirai(
+    {
+      suppressPackageStartupMessages(library(tidymodels))
+
+      preprocessor <- eval(parse(text = recipe))
+      spec <- eval(parse(text = model))
+      
+      .ns <- switch(
+        resampling_fn,
+        tune_race_anova = , tune_sim_anneal = "finetune",
+        "tune"
+      )
+
+      cl <- rlang::call2(
+        resampling_fn,
+        object = spec,
+        preprocessor = preprocessor,
+        resamples = folds_obj,
+        .ns = .ns
+      )
+
+      # TODO: should this just run_r_code with mock_script() so that
+      # we get the same streaming "for free"?
+      resampling_result <- rlang::eval_bare(cl)
+      metrics <- tune::collect_metrics(resampling_result)
+      
+      list(metrics = metrics, script = script)
+    }, 
+    list2env(as.list(environment()), global_env())
   )
   
-  promises::then(m, function(result) {
-    rlang::env_bind(
-      the,
-      !!name := list(script = result$script, metrics = result$metrics)
-    )
-  })
+  promises::then(m, 
+    onFulfilled = function(result) {
+      the$experiments[[name]]$status <- "completed"
+      the$experiments[[name]]$metrics <- result$metrics
+      the$experiments[[name]]$completed_at <- Sys.time()
+    },
+    onRejected = function(error) {
+      the$experiments[[name]]$status <- "completed"
+      the$experiments[[name]]$error <- conditionMessage(error)
+      the$experiments[[name]]$completed_at <- Sys.time()
+    }
+  )
+
+  if (synchronous) {
+    res <- mirai::collect_mirai(m)
+    if (mirai::is_error_value(res)) {
+      return(ellmer::ContentToolResult(
+        error = res
+      ))
+    }
+    return(ellmer::ContentToolResult(
+      value = btw::btw_this(res$metrics)
+    ))
+  }
   
   ellmer::ContentToolResult(
-    value = paste0("Experiment ", name, " running.")
+    value = paste0(c(
+      "Experiment ", name, " running.\n\n",
+      "This is not a notification that the experiment finished; you will be ",
+      "automatically notified of experimental results when the experiment ",
+      "finishes. You cannot access experimental results by running R code."
+    ), collapse = "")
   )
 }
 
@@ -63,10 +97,11 @@ run_experiment_safely <- function(
  recipe,
  model,
  resampling_fn,
- name
+ name,
+ synchronous = FALSE
 ) {
  tryCatch({
-   run_experiment(folds, recipe, model, resampling_fn, name)
+   run_experiment(folds, recipe, model, resampling_fn, name, synchronous)
  }, error = function(e) {
    error_msg <- conditionMessage(e)
    if (exists(".Last.tune.result")) {
@@ -125,7 +160,9 @@ tool_run_experiment <-
   tool(
     run_experiment_safely,
     "Carries out a modeling experiment with tidymodels. This should be the
-     _only_ mechanism by which the assistant actually fits models.",
+     _only_ mechanism by which the assistant actually fits models.
+     Be sure to namespace any functions you use from tidymodels in the recipe
+     and model specifications.",
     folds = type_string("The name of the resamples object."),
     recipe = type_string(paste0(c(
       readLines(system.file("prompts/recipe.md", package = "modelbot")),
@@ -143,6 +180,13 @@ tool_run_experiment <-
       "Do not include parantheses after the function name."
     ), collapse = "\n")),
     name = type_string("A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."),
+    synchronous = type_boolean(paste0(c(
+      "Whether the experiment should be run synchronously or not.",
+      "The first experiments, with a null model and baseline fit, should ",
+      "likely be run synchronously. Experiments after the first two should likely ",
+      "be run asynchronously so you can run multiple at a time without freezing ",
+      "the user's interface. Defaults to false, as in asynchronous."
+    ), collapse = "")),
     .convert = FALSE,
     .name = "run_experiment"
   )

@@ -1,1 +1,19 @@
 the <- rlang::new_environment()
+
+# Each experiment is a list with slots:
+# - status: "running" or "completed"
+# - script: R code string (always available)
+# - metrics: data.frame (NULL until completed successfully)
+# - error: character string (NULL if no error)
+# - started_at: POSIXct timestamp
+# - completed_at: POSIXct timestamp (NULL until finished)
+# - seen_by_model: logical (whether model has been told about results)
+the$experiments <- list()
+
+running_experiments <- function() {
+  names(Filter(function(exp) exp$status == "running", the$experiments))
+}
+
+new_experiments <- function() {
+  names(Filter(function(exp) exp$status == "completed" && !exp$seen_by_model, the$experiments))
+}
