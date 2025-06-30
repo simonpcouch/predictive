@@ -1,4 +1,4 @@
-# modeldata: Predictive modeling frontend for tidymodels
+# A predictive modeling frontend for tidymodels
 
 predictive is a fork of [databot](https://github.com/jcheng5/databot) focused on predictive modeling. Modeling with tidymodels is a bit different than EDA in two important ways:
 
