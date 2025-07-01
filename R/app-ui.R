@@ -9,8 +9,11 @@ card_render_experiment <- function(name, exp) {
 
   duration <- card_duration(exp)
   best_label <- card_best_label(name, exp)
-  baseline_label <- if (grepl("null", name, ignore.case = TRUE)) "baseline" else
+  baseline_label <- if (grepl("null", name, ignore.case = TRUE)) {
+    "baseline"
+  } else {
     ""
+  }
   metrics_display <- card_metrics_display(exp)
 
   div(
@@ -26,8 +29,9 @@ card_render_experiment <- function(name, exp) {
       div(
         style = "display: flex; gap: 8px; font-size: 12px;",
         if (baseline_label != "") span(baseline_label, style = "color: #666;"),
-        if (best_label != "")
+        if (best_label != "") {
           span(best_label, style = "color: #28a745; font-weight: bold;")
+        }
       )
     ),
     div(
@@ -38,11 +42,12 @@ card_render_experiment <- function(name, exp) {
       style = "font-style: italic; color: #666; margin-bottom: 8px;",
       exp$purpose
     ),
-    if (metrics_display != "")
+    if (metrics_display != "") {
       div(
         style = "font-size: 12px; color: #666; text-align: right;",
         HTML(metrics_display)
       )
+    }
   )
 }
 
@@ -63,63 +68,35 @@ card_duration <- function(exp) {
   }
 }
 
-card_best_label <- function(name, exp) {
+card_best_label <- function(name, experiment) {
   if (
-    exp$status != "completed" || !is.null(exp$error) || is.null(exp$metrics)
+    experiment$status != "completed" ||
+      !is.null(experiment$error) ||
+      is.null(experiment$metrics)
   ) {
     return("")
   }
 
-  other_exps <- the$experiments
-  other_exps[[name]] <- NULL
-  other_exps <- Filter(
-    function(e)
-      e$status == "completed" && is.null(e$error) && !is.null(e$metrics),
-    other_exps
+  other_experiments <- the$experiments
+  other_experiments[[name]] <- NULL
+  other_experiments <- Filter(
+    function(e) {
+      e$status == "completed" && is.null(e$error) && !is.null(e$metrics)
+    },
+    other_experiments
   )
 
-  metric_info <- list(
-    rmse = list(higher_is_better = FALSE),
-    rsq = list(higher_is_better = TRUE),
-    roc_auc = list(higher_is_better = TRUE),
-    accuracy = list(higher_is_better = TRUE)
-  )
+  other_metrics <- purrr::map(other_experiments, "metrics")
+  other_metrics <- purrr::list_rbind(other_metrics)
 
-  for (metric_name in exp$metrics$.metric) {
-    if (!metric_name %in% names(metric_info)) {
-      next
+  if ("rmse" %in% experiment$metrics$.metric) {
+    if (min_rmse(experiment$metrics) < min_rmse(other_metrics)) {
+      return("New best!")
     }
+  }
 
-    current_value <- exp$metrics[exp$metrics$.metric == metric_name, ]$mean[1]
-
-    if (is.na(current_value)) {
-      next
-    }
-
-    higher_is_better <- metric_info[[metric_name]]$higher_is_better
-    is_best_for_this_metric <- TRUE
-
-    for (other_exp in other_exps) {
-      if (metric_name %in% other_exp$metrics$.metric) {
-        other_value <- other_exp$metrics[
-          other_exp$metrics$.metric == metric_name,
-        ]$mean[1]
-
-        if (is.na(other_value)) {
-          next
-        }
-
-        if (higher_is_better && other_value > current_value) {
-          is_best_for_this_metric <- FALSE
-          break
-        } else if (!higher_is_better && other_value < current_value) {
-          is_best_for_this_metric <- FALSE
-          break
-        }
-      }
-    }
-
-    if (is_best_for_this_metric) {
+  if ("roc_auc" %in% experiment$metrics$.metric) {
+    if (max_roc_auc(experiment$metrics) > max_roc_auc(other_metrics)) {
       return("New best!")
     }
   }
@@ -127,38 +104,69 @@ card_best_label <- function(name, exp) {
   return("")
 }
 
-card_metrics_display <- function(exp) {
+min_rmse <- function(metrics) {
+  res <- metrics[metrics$.metric == "rmse", ]
+  min(res$mean, na.rm = TRUE)
+}
+
+max_roc_auc <- function(metric) {
+  res <- metrics[metrics$.metric == "roc_auc", ]
+  max(res$mean, na.rm = TRUE)
+}
+
+card_metrics_display <- function(experiment) {
   if (
-    exp$status != "completed" || is.null(exp$metrics) || !is.null(exp$error)
+    experiment$status != "completed" ||
+      is.null(experiment$metrics) ||
+      !is.null(experiment$error)
   ) {
     return("")
   }
 
-  metrics <- exp$metrics
-  parts <- character(0)
-
-  display_metrics <- c("rmse", "rsq", "roc_auc", "accuracy")
-  metrics_to_display <- metrics[metrics$.metric %in% display_metrics, ]
-
-  if (nrow(metrics_to_display) == 0) {
+  metrics <- experiment$metrics
+  if (nrow(metrics) == 0) {
     return("")
   }
 
-  for (i in 1:nrow(metrics_to_display)) {
-    metric_row <- metrics_to_display[i, ]
-    metric_name <- metric_row$.metric
-    value <- round(metric_row$mean, 3)
-
-    label <- switch(
-      metric_name,
-      "rmse" = "RMSE",
-      "rsq" = "R²",
-      "roc_auc" = "ROC AUC",
-      "accuracy" = "Accuracy",
-      metric_name
+  # regression
+  if ("rmse" %in% metrics$.metric) {
+    min_rmse <- min_rmse(metrics)
+    min_rmse_idx <- which(min_rmse == metrics$mean)
+    corresponding_rsq <- metrics[metrics$.metric == "rsq", ]
+    corresponding_rsq <- corresponding_rsq$mean[
+      corresponding_rsq$.config == metrics$.config[min_rmse_idx]
+    ]
+    return(
+      paste0(
+        "RMSE: ",
+        round(min_rmse, 3),
+        "\n\n",
+        "R²: ",
+        round(corresponding_rsq, 3),
+        collapse = ""
+      )
     )
-    parts <- c(parts, paste0(label, ": ", value))
   }
 
-  paste(parts, collapse = "<br>")
+  # classification
+  if ("roc_auc" %in% metrics$.metric) {
+    max_roc_auc <- max_roc_auc(metrics)
+    max_roc_auc_idx <- which(max_roc_auc == metrics$mean)
+    corresponding_accuracy <- metrics[metrics$.metric == "accuracy", ]
+    corresponding_accuracy <- corresponding_accuracy$mean[
+      corresponding_accuracy$.config == metrics$.config[max_roc_auc_idx]
+    ]
+    return(
+      paste0(
+        "ROC AUC: ",
+        round(max_roc_auc, 3),
+        "\n\n",
+        "Accuracy: ",
+        round(corresponding_accuracy, 3),
+        collapse = ""
+      )
+    )
+  }
+
+  return("")
 }
