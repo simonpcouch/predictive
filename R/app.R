@@ -220,6 +220,58 @@ predictive <- function(new_session = FALSE) {
       experiment_cards_reactive()
     })
 
+    observeEvent(input$experiment_card_click, {
+      exp_name <- input$experiment_card_click$name
+      exp <- the$experiments[[exp_name]]
+      
+      if (is.null(exp)) return()
+      
+      formatted_script <- format_experiment_script(exp$script)
+      
+      modal_content <- list(
+        h4("R Script"),
+        HTML(paste0(
+          "<pre style='background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; margin: 0;'><code>",
+          htmltools::htmlEscape(formatted_script),
+          "</code></pre>"
+        ))
+      )
+      
+      if (!is.null(exp$error)) {
+        modal_content <- append(modal_content, list(
+          h4("Error", style = "color: #dc3545; margin-top: 20px;"),
+          pre(
+            style = "background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap;",
+            exp$error
+          )
+        ))
+      } else if (!is.null(exp$metrics)) {
+        modal_content <- append(modal_content, list(
+          h4("Metrics", style = "margin-top: 20px;"),
+          HTML(create_metrics_table(exp$metrics))
+        ))
+      }
+      
+      if (!is.null(exp$started_at) && !is.null(exp$completed_at)) {
+        duration <- round(as.numeric(difftime(
+          exp$completed_at,
+          exp$started_at,
+          units = "secs"
+        )))
+        modal_content <- append(modal_content, list(
+          p(strong("Duration: "), paste0(duration, "s"), style = "margin-top: 20px;")
+        ))
+      }
+      
+      showModal(modalDialog(
+        title = paste("Experiment:", exp_name),
+        modal_content,
+        size = "l",
+        easyClose = TRUE,
+        footer = modalButton("Close")
+      ))
+    })
+
     # Restore previous chat session, if applicable
     if (globals$ui_messages$size() > 0) {
       ui_msgs <- globals$ui_messages$as_list()

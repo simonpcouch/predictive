@@ -25,6 +25,7 @@ Imports:
     S7,
     shiny (>= 1.10.0),
     shinychat,
+    styler,
     tibble,
     tools,
     utils,

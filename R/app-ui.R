@@ -18,7 +18,15 @@ card_render_experiment <- function(name, exp) {
 
   div(
     class = "experiment-card",
-    style = "background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);",
+    id = paste0("card-", name),
+    style = "background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: box-shadow 0.2s ease;",
+    onmouseover = "this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)'",
+    onmouseout = "this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'",
+    onclick = paste0(
+      "Shiny.setInputValue('experiment_card_click', {name: '",
+      name,
+      "', timestamp: Date.now()}, {priority: 'event'})"
+    ),
     div(
       style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;",
       div(
@@ -131,7 +139,7 @@ card_metrics_display <- function(experiment) {
   # regression
   if ("rmse" %in% metrics$.metric) {
     min_rmse <- min_rmse(metrics)
-    min_rmse_idx <- which(min_rmse == metrics$mean)
+    min_rmse_idx <- which(min_rmse == metrics$mean)[1]
     corresponding_rsq <- metrics[metrics$.metric == "rsq", ]
     corresponding_rsq <- corresponding_rsq$mean[
       corresponding_rsq$.config == metrics$.config[min_rmse_idx]
@@ -151,7 +159,7 @@ card_metrics_display <- function(experiment) {
   # classification
   if ("roc_auc" %in% metrics$.metric) {
     max_roc_auc <- max_roc_auc(metrics)
-    max_roc_auc_idx <- which(max_roc_auc == metrics$mean)
+    max_roc_auc_idx <- which(max_roc_auc == metrics$mean)[1]
     corresponding_accuracy <- metrics[metrics$.metric == "accuracy", ]
     corresponding_accuracy <- corresponding_accuracy$mean[
       corresponding_accuracy$.config == metrics$.config[max_roc_auc_idx]
@@ -169,4 +177,61 @@ card_metrics_display <- function(experiment) {
   }
 
   return("")
+}
+
+format_experiment_script <- function(script) {
+  if (is.null(script) || script == "") {
+    return("No script available")
+  }
+
+  formatted_script <- tryCatch(
+    {
+      styler::style_text(script)
+    },
+    error = function(e) {
+      script
+    }
+  )
+
+  paste(formatted_script, collapse = "\n")
+}
+
+create_metrics_table <- function(metrics) {
+  if (is.null(metrics) || nrow(metrics) == 0) {
+    return("<p>No metrics available</p>")
+  }
+
+  # Convert metrics to HTML table
+  table_html <- "<table class='table table-striped table-sm'>"
+  table_html <- paste0(table_html, "<thead><tr>")
+
+  for (col in names(metrics)) {
+    table_html <- paste0(
+      table_html,
+      "<th>",
+      htmltools::htmlEscape(col),
+      "</th>"
+    )
+  }
+  table_html <- paste0(table_html, "</tr></thead><tbody>")
+
+  for (i in seq_len(nrow(metrics))) {
+    table_html <- paste0(table_html, "<tr>")
+    for (col in names(metrics)) {
+      value <- metrics[[col]][i]
+      if (is.numeric(value)) {
+        value <- round(value, 4)
+      }
+      table_html <- paste0(
+        table_html,
+        "<td>",
+        htmltools::htmlEscape(as.character(value)),
+        "</td>"
+      )
+    }
+    table_html <- paste0(table_html, "</tr>")
+  }
+
+  table_html <- paste0(table_html, "</tbody></table>")
+  table_html
 }
