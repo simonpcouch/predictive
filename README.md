@@ -7,7 +7,9 @@ predictive is a fork of [databot](https://github.com/jcheng5/databot) focused on
 
 predictive is an experiment in revisiting databot with these two considerations in mind.
 
-### Package installation
+<img src="inst/demo.gif" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);" alt="Demo of predictive.">
+
+## Installation
 
 ```r
 pak::pak("simonpcouch/predictive")
@@ -16,4 +18,4 @@ pak::pak("simonpcouch/predictive")
 ## Running
 
 - Open a (new or existing) project in RStudio or Positron.
-- **Run `predictive::predictive()` to launch the app.**
+- Run `predictive::predictive()` to launch the app.
