@@ -23,10 +23,10 @@ card_render_experiment <- function(name, exp) {
     onmouseover = "this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)'",
     onmouseout = "this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'",
     onclick = paste0(
-      "Shiny.setInputValue('experiment_card_click', {name: '",
-      name,
-      "', timestamp: Date.now()}, {priority: 'event'})"
+      "var expName = this.getAttribute('data-experiment-name'); ",
+      "Shiny.setInputValue('experiment_card_click', {name: expName, timestamp: Date.now()}, {priority: 'event'})"
     ),
+    "data-experiment-name" = name,
     div(
       style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;",
       div(

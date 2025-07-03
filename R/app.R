@@ -220,11 +220,20 @@ predictive <- function(new_session = FALSE) {
       experiment_cards_reactive()
     })
 
-    observeEvent(input$experiment_card_click, {
-      exp_name <- input$experiment_card_click$name
+    # Debounced card click handler
+    card_click_debounced <- debounce(reactive(input$experiment_card_click), 200)
+    
+    observeEvent(card_click_debounced(), ignoreInit = TRUE, {
+      click_data <- card_click_debounced()
+      if (is.null(click_data)) return()
+      
+      exp_name <- click_data$name
       exp <- the$experiments[[exp_name]]
       
       if (is.null(exp)) return()
+      
+      # Remove any existing modal before showing new one
+      removeModal()
       
       formatted_script <- format_experiment_script(exp$script)
       
