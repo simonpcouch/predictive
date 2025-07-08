@@ -160,17 +160,17 @@ card_metrics_display <- function(experiment) {
   if ("roc_auc" %in% metrics$.metric) {
     max_roc_auc <- max_roc_auc(metrics)
     max_roc_auc_idx <- which(max_roc_auc == metrics$mean)[1]
-    corresponding_accuracy <- metrics[metrics$.metric == "accuracy", ]
-    corresponding_accuracy <- corresponding_accuracy$mean[
-      corresponding_accuracy$.config == metrics$.config[max_roc_auc_idx]
+    corresponding_brier <- metrics[metrics$.metric == "brier_class", ]
+    corresponding_brier <- corresponding_brier$mean[
+      corresponding_brier$.config == metrics$.config[max_roc_auc_idx]
     ]
     return(
       paste0(
         "ROC AUC: ",
         round(max_roc_auc, 3),
         "\n\n",
-        "Accuracy: ",
-        round(corresponding_accuracy, 3),
+        "Brier score: ",
+        round(corresponding_brier, 3),
         collapse = ""
       )
     )
