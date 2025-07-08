@@ -117,7 +117,7 @@ min_rmse <- function(metrics) {
   min(res$mean, na.rm = TRUE)
 }
 
-max_roc_auc <- function(metric) {
+max_roc_auc <- function(metrics) {
   res <- metrics[metrics$.metric == "roc_auc", ]
   max(res$mean, na.rm = TRUE)
 }
