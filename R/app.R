@@ -82,7 +82,9 @@ predictive <- function(new_session = FALSE) {
     ) {
       clear_on_tool_result <- chat_client$on_tool_result(function(result) {
         session <- shiny::getDefaultReactiveDomain()
-        if (is.null(session)) return()
+        if (is.null(session)) {
+          return()
+        }
         session$sendCustomMessage(
           "shinychat-hide-tool-request",
           result@request@id
@@ -123,7 +125,17 @@ predictive <- function(new_session = FALSE) {
 
     format_single_experiment <- function(name, exp) {
       parts <- c(
-        paste0("### Experiment: ", name),
+        paste0(
+          "### Experiment: ",
+          name,
+          " (",
+          if (!is.null(exp$error)) {
+            "Error"
+          } else {
+            "Success"
+          },
+          ")"
+        ),
         "**Script:**",
         paste0("```r\n", exp$script, "\n```")
       )
@@ -146,7 +158,9 @@ predictive <- function(new_session = FALSE) {
         function(exp) exp$status == "completed",
         the$experiments
       ))
-      if (length(completed_experiments) == 0) return("")
+      if (length(completed_experiments) == 0) {
+        return("")
+      }
 
       new_exp_names <- new_experiments()
       old_exp_names <- setdiff(completed_experiments, new_exp_names)
@@ -161,7 +175,13 @@ predictive <- function(new_session = FALSE) {
       }
 
       if (length(new_exp_names) > 0) {
-        res <- c(res, "## New Experiment Results")
+        res <- c(
+          res,
+          "## New Experiment Results",
+          "When reading experiment results, pay careful attention to markdown 
+           headers to ensure that you're connecting the correct experiment
+           name to its own results rather than the results of another experiment."
+        )
         for (name in new_exp_names) {
           res <- c(res, format_single_experiment(name, the$experiments[[name]]))
         }
@@ -222,21 +242,25 @@ predictive <- function(new_session = FALSE) {
 
     # Debounced card click handler
     card_click_debounced <- debounce(reactive(input$experiment_card_click), 200)
-    
+
     observeEvent(card_click_debounced(), ignoreInit = TRUE, {
       click_data <- card_click_debounced()
-      if (is.null(click_data)) return()
-      
+      if (is.null(click_data)) {
+        return()
+      }
+
       exp_name <- click_data$name
       exp <- the$experiments[[exp_name]]
-      
-      if (is.null(exp)) return()
-      
+
+      if (is.null(exp)) {
+        return()
+      }
+
       # Remove any existing modal before showing new one
       removeModal()
-      
+
       formatted_script <- format_experiment_script(exp$script)
-      
+
       modal_content <- list(
         h4("R Script"),
         HTML(paste0(
@@ -245,33 +269,46 @@ predictive <- function(new_session = FALSE) {
           "</code></pre>"
         ))
       )
-      
+
       if (!is.null(exp$error)) {
-        modal_content <- append(modal_content, list(
-          h4("Error", style = "color: #dc3545; margin-top: 20px;"),
-          pre(
-            style = "background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap;",
-            exp$error
+        modal_content <- append(
+          modal_content,
+          list(
+            h4("Error", style = "color: #dc3545; margin-top: 20px;"),
+            pre(
+              style = "background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap;",
+              exp$error
+            )
           )
-        ))
+        )
       } else if (!is.null(exp$metrics)) {
-        modal_content <- append(modal_content, list(
-          h4("Metrics", style = "margin-top: 20px;"),
-          HTML(create_metrics_table(exp$metrics))
-        ))
+        modal_content <- append(
+          modal_content,
+          list(
+            h4("Metrics", style = "margin-top: 20px;"),
+            HTML(create_metrics_table(exp$metrics))
+          )
+        )
       }
-      
+
       if (!is.null(exp$started_at) && !is.null(exp$completed_at)) {
         duration <- round(as.numeric(difftime(
           exp$completed_at,
           exp$started_at,
           units = "secs"
         )))
-        modal_content <- append(modal_content, list(
-          p(strong("Duration: "), paste0(duration, "s"), style = "margin-top: 20px;")
-        ))
+        modal_content <- append(
+          modal_content,
+          list(
+            p(
+              strong("Duration: "),
+              paste0(duration, "s"),
+              style = "margin-top: 20px;"
+            )
+          )
+        )
       }
-      
+
       showModal(modalDialog(
         title = paste("Experiment:", exp_name),
         modal_content,
