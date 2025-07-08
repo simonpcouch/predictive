@@ -1,7 +1,7 @@
 ## `step_rm()`
 
-Removes variables specified by selectors.
+Removes selected variables from the data.
 
 Arguments:
-* `...`: One or more selector functions to choose which variables are removed. See `?selections` for more details. This argument is not tunable.
-
+* `...`: One or more selector functions to choose variables for removal
+* `removals`: Character vector of column names to remove (determined during `prep()`)

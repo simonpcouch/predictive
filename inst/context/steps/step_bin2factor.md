@@ -1,8 +1,8 @@
 ## `step_bin2factor()`
 
-Converts a binary numeric variable (0/1) into a two-level factor.
+Converts binary dummy variables (0/1) to two-level factors.
 
 Arguments:
-* `levels`: A length-two character vector for the new factor levels. The first element replaces 1s, the second replaces 0s. Not tunable.
-* `ref_first`: A logical. If `TRUE`, the level corresponding to 1s is the reference level. Not tunable.
-
+* `levels`: Character vector of length 2 for factor levels. First value for 1's, second for 0's.
+* `ref_first`: Logical. Should first level be the reference level?
+* `columns`: Character vector of column names to convert.

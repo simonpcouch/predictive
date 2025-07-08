@@ -1,8 +1,9 @@
 ## `step_corr()`
 
-Removes numeric variables that have high absolute correlations with other variables.
+Removes variables that have high absolute correlations with other variables.
 
 Arguments:
-* `threshold`: The absolute correlation threshold for removal. This argument is tunable.
-* `use`: A character string for how to handle missing data in the correlation calculation (e.g., "pairwise.complete.obs").
-* `method`: A character string for the correlation method (e.g., "pearson", "spearman").
+* `threshold`: Threshold for absolute correlation values. Step removes minimum columns to keep all correlations below this value. Tunable.
+* `use`: Method for handling missing values in `stats::cor()`.
+* `method`: Correlation method for `stats::cor()`.
+* `removals`: Names of columns removed (determined during `prep()`).

@@ -1,16 +1,14 @@
 ## `svm_linear()`
 
-Linear Support Vector Machines (SVMs) find a hyperplane that optimally separates classes (for classification) or fits the data with a margin of tolerance (for regression). They are highly effective for high-dimensional data and are very fast to fit.
+Linear support vector machines for classification and regression. Reasonably fast to fit, with efficient implementations for linear boundaries.
 
 Arguments:
-* `cost`: The cost of misclassification (`C` parameter), controlling the trade-off between margin width and errors. It is recommended to tune this parameter.
-* `margin`: The epsilon in the insensitive loss function (for regression only). It is recommended to tune this parameter.
+* `cost`: Cost of predicting a sample within or on wrong side of margin. tune.
+* `margin`: Epsilon in SVM insensitive loss function (regression only). tune.
 
 Engines:
 * `LiblineaR` (classification, regression)
-    - The default engine. Highly optimized for linear SVMs and very fast, especially for large or wide datasets.
-    - No parsnip extension package is required.
+  - Default engine.
+  - Efficient implementation optimized for linear SVMs.
 * `kernlab` (classification, regression)
-    - A versatile SVM engine that provides a solid implementation for linear SVMs.
-    - No parsnip extension package is required.
-
+  - More flexible implementation with broader SVM functionality.

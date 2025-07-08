@@ -1,9 +1,9 @@
 ## `step_harmonic()`
 
-Creates sine and cosine features from a numeric variable to model harmonic patterns.
+Adds sine and cosine terms for harmonic analysis of periodic signals.
 
 Arguments:
-* `frequency`: The frequency of the harmonic. This argument is tunable.
-* `cycle_size`: The length of a single cycle.
-* `starting_val`: A reference point for the start of the cycle.
-* `keep_original_cols`: A logical indicating whether to keep the original columns.
+* `frequency`: Numeric vector. Frequency values must be positive and finite. Tunable.
+* `cycle_size`: Numeric vector. Size of a single cycle in same units as input variable.
+* `starting_val`: Numeric, Date, or POSIXt. Reference point for sin/cos curves. Default is 0.
+* `columns`: Character. Selected variable names (populated by `prep()`).

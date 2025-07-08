@@ -1,6 +1,6 @@
 ## `step_sqrt()`
 
-Applies the square root transformation to numeric data.
+Applies a square root transformation to variables.
 
-*This step has no arguments to configure.*
-
+Arguments:
+* `columns`: Variables to transform (created by prep)

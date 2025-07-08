@@ -1,8 +1,7 @@
 ## `step_sample()`
 
-Randomly samples rows from the data.
+Samples rows from the data using dplyr's sampling functions.
 
 Arguments:
-* `size`: The number (>=1) or proportion ((0, 1)) of rows to select. Tunable.
-* `replace`: Sample with or without replacement. Tunable.
-
+* `size`: Integer or fraction. If within (0, 1), uses `sample_frac()`. If ≥1, uses `sample_n()`. Default (`NULL`) uses `sample_n()` with training set size.
+* `replace`: Logical. Sample with replacement?

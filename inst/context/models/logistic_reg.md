@@ -1,28 +1,23 @@
 ## `logistic_reg()`
 
-Logistic regression is a fundamental, highly interpretable statistical method for binary classification. It is extremely fast to fit and serves as an excellent baseline model.
+Logistic regression models the log odds of a binary event using a linear combination of predictors. Fast to fit with standard engines, scales well to large datasets.
 
 Arguments:
-* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using regularized engines (e.g., `glmnet`, `LiblineaR`, `brulee`).
-* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using regularized engines.
+* `penalty`: Amount of regularization. tune.
+* `mixture`: Proportion of L1 regularization (lasso) vs L2 (ridge). tune.
 
 Engines:
 * `glm` (classification)
-    - The default engine. A fast, standard implementation.
-    - No parsnip extension package is required.
-* `glmnet` (classification)
-    - Supports regularized regression (lasso, ridge, and elastic net), which is useful for high-dimensional data and feature selection. Supports `penalty` and `mixture`.
-    - No parsnip extension package is required.
+  - Doesn't support regularization arguments
+  - Basic implementation using standard generalized linear model
 * `LiblineaR` (classification)
-    - A fast engine for large-scale linear classification. Supports `penalty` and `mixture` (must be 0 or 1).
-    - No parsnip extension package is required.
+  - Fast implementation for linear models
+  - `mixture` must be exactly 0 or 1
 * `brulee` (classification)
-    - A fast, Torch-based engine suitable for GPU acceleration. Supports `penalty` and `mixture`.
-    - No parsnip extension package is required.
+  - GPU-accelerated implementation
 * `gee` (classification)
-    - For correlated or clustered data (e.g., longitudinal studies).
-    - Requires the `multilevelmod` extension package.
+  - Generalized estimating equations for correlated data
+  - Requires multilevelmod extension
 * `glmer` (classification)
-    - For multilevel/hierarchical models with random effects.
-    - Requires the `multilevelmod` extension package.
-
+  - Fits mixed effects logistic regression models
+  - Requires multilevelmod extension

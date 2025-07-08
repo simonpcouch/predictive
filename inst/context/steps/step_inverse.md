@@ -1,6 +1,6 @@
 ## `step_inverse()`
 
-Applies an inverse transformation (1/x) to numeric data.
+Performs inverse (1/x) transformation on numeric variables.
 
 Arguments:
-* offset, an optional value to add to the data to avoid division by zero.
+* `offset`: Value added to data prior to transformation (to avoid 1/0).

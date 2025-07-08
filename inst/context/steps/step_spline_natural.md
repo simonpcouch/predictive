@@ -1,9 +1,9 @@
 ## `step_spline_natural()`
 
-Creates natural spline features from a numeric variable to estimate non-linear trends.
+Creates natural spline (restricted cubic spline) features from numeric predictors.
 
 Arguments:
-* `deg_free`: The degrees of freedom for the natural spline. Higher values lead to more flexible curves. This argument is tunable.
-* `complete_set`: A logical. If `TRUE`, the complete basis matrix is returned. If `FALSE`, the first basis column is excluded.
-* `options`: A list of options to pass to `splines2::naturalSpline()`.
-* `keep_original_cols`: A logical. If `TRUE`, the original columns are kept in the data set.
+* `deg_free`: Degrees of freedom for the natural spline. Controls flexibility of curves (higher = more complex). Minimum of 2. Tunable.
+* `complete_set`: Logical. If TRUE, returns complete basis matrix. If FALSE, excludes first basis.
+* `options`: List of options for `splines2::naturalSpline()` (excluding `x`, `df`, and `intercept`).
+* `results`: List of objects created after step training.

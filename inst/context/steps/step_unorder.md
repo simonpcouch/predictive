@@ -1,4 +1,6 @@
 ## `step_unorder()`
 
-Converts ordered factor variables to unordered factors. The factor level order is preserved during the transformation.
+Converts ordered factor variables to unordered factor variables while preserving the factor level order.
 
+Arguments:
+* `columns`: Character string of variable names to be modified

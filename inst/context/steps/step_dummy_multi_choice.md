@@ -1,11 +1,10 @@
 ## `step_dummy_multi_choice()`
 
-Converts multiple character or factor columns into a set of binary indicator variables. All levels from all selected columns are treated as a single group for creating the new variables.
+Creates binary indicator variables from multiple categorical predictors, handling levels across all predictors together.
 
 Arguments:
-* `threshold`: A numeric value (0-1 for proportion, >=1 for frequency) to pool infrequent levels into an "other" category. Tunable.
-* `other`: A character string for the name of the "other" category.
-* `naming`: A function to define the naming convention for the new dummy columns.
-* `prefix`: A character string to prefix the new variable names. Defaults to the name of the first variable selected.
-* `sparse`: Whether to create sparse columns. Can be `"yes"`, `"no"`, or `"auto"`.
-* `keep_original_cols`: Logical to retain the original columns in the output.
+* `threshold`: Numeric. When < 1: pools levels with occurrence rate below threshold to "other". When ≥ 1: pools levels occurring fewer than threshold times.
+* `other`: Character. Value for the pooled category. Default: "other".
+* `naming`: Function. Defines naming convention for new dummy columns.
+* `prefix`: Character. Prefix for new variable names. Default: first selected column name.
+* `sparse`: Character ("yes", "no", "auto"). Should dummy columns be sparse vectors?

@@ -1,8 +1,8 @@
 ## `step_num2factor()`
 
-Converts numeric variables to factors. This is useful when categories are encoded as integers.
+Converts numeric variables to factors (ordered or unordered).
 
 Arguments:
-* `transform`: A function to modify the numeric values before they are converted to factor levels. The output of the function should be an integer that corresponds to an index in `levels`.
-* `levels`: A character vector of factor levels.
-* `ordered`: A logical indicating if the resulting factor should be ordered.
+* `transform`: Function to modify numeric values before determining factor levels. Should return integers corresponding to level positions.
+* `levels`: Character vector of values to use as factor levels. Modified during `prep()`.
+* `ordered`: Logical. Should factors be ordered?

@@ -1,9 +1,8 @@
 ## `step_holiday()`
 
-Creates binary indicator variables for specific holidays from `Date` or `POSIXct` columns.
+Creates binary indicator variables for common holidays from date data.
 
 Arguments:
-* `holidays`: A character vector of holidays supported by the `timeDate` package.
-* `sparse`: Whether to create sparse columns (`"yes"`, `"no"`, or `"auto"`).
-* `keep_original_cols`: A logical indicating whether to keep the original date columns.
-
+* `holidays`: Character vector of holiday names supported by the `timeDate` package (default: `c("LaborDay", "NewYearsDay", "ChristmasDay")`)
+* `columns`: Character string of selected variable names (populated by `prep()`)
+* `sparse`: Should columns be sparse vectors? Options: "yes", "no", "auto" (default: "auto")

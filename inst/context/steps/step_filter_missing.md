@@ -1,6 +1,8 @@
 ## `step_filter_missing()`
 
-Removes columns where the proportion of missing values exceeds a threshold.
+Removes variables with too many missing values.
 
 Arguments:
-* `threshold`: The proportional threshold of missing values to trigger removal. This argument is tunable.
+* `...`: Variables to filter
+* `threshold`: Threshold proportion of missingness above which variables are removed. Set to 0 to remove all variables with any missing values.
+* `removals`: Character vector of removed column names (automatically determined during `prep()`)

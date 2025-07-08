@@ -3,4 +3,6 @@
 Centers numeric data to have a mean of zero.
 
 Arguments:
-* `na_rm`: A logical indicating whether `NA` values should be removed when computing the means. Not tunable.
+* `...`: Variables to center
+* `means`: Named numeric vector of means (created by `prep()`)
+* `na_rm`: Logical. Remove NA values when computing means?

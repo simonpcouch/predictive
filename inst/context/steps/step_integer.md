@@ -1,7 +1,8 @@
 ## `step_integer()`
 
-Converts categorical variables to integers based on the factor levels or alphabetical order of values observed in the training set. Also known as integer encoding.
+Converts values to predefined integers (integer encoding) based on ascending order of values from training data.
 
 Arguments:
-* `strict`: A logical. If `TRUE` (the default), the new column is an integer. If `FALSE`, it's a numeric (double). Not tunable.
-* `zero_based`: A logical. If `TRUE`, the integer mapping starts at 0. If `FALSE` (the default), the mapping starts at 1, and any new levels not seen during training are mapped to 0. Not tunable.
+* `strict`: Logical. Return values as integers rather than doubles?
+* `zero_based`: Logical. Start integers at zero and append new values as largest integer?
+* `key`: List with information to create integer variables. `NULL` until trained.

@@ -1,19 +1,21 @@
 ## `rule_fit()`
 
-RuleFit creates a model by first generating a large set of "if-then" rules from a tree-based ensemble and then fitting a regularized linear model (lasso) on these rules. This produces a model that is both highly accurate and interpretable, but the two-stage process makes it slow to fit.
+RuleFit models derive simple feature rules from tree ensembles and use them as features in a regularized model. Moderately fast to fit, with better interpretability than pure tree ensembles.
 
 Arguments:
-* `trees`: The number of trees in the initial ensemble. It is recommended to tune this parameter.
-* `mtry`: The number of predictors randomly sampled at each split. It is recommended to tune this parameter.
-* `tree_depth`: The maximum depth of the trees in the ensemble. It is recommended to tune this parameter.
-* `learn_rate`: The learning rate for the boosting algorithm used to generate rules. It is recommended to tune this parameter.
-* `penalty`: The L1 regularization penalty used to select the final set of rules. It is essential to tune this parameter.
+* `mtry`: Number/proportion of predictors randomly sampled at each split. tune.
+* `trees`: Number of trees in the ensemble. tune.
+* `min_n`: Minimum number of data points required for a node to split further. tune.
+* `tree_depth`: Maximum depth of trees. tune.
+* `learn_rate`: Rate at which boosting algorithm adapts between iterations. tune.
+* `loss_reduction`: Reduction in loss function required to split further. tune.
+* `sample_size`: Number/proportion of data exposed to fitting routine. tune.
+* `stop_iter`: Number of iterations without improvement before stopping. tune.
+* `penalty`: L1 regularization parameter. tune.
 
 Engines:
 * `xrf` (classification, regression)
-    - The default engine, providing an implementation of the original RuleFit algorithm.
-    - Requires the `rules` extension package.
+  - Default engine
+  - Requires rules extension
 * `h2o` (classification, regression)
-    - A scalable engine for large datasets.
-    - Requires the `agua` extension package.
-
+  - Requires agua extension

@@ -1,6 +1,6 @@
 ## `step_zv()`
 
-Removes predictor columns that contain only a single unique value.
+Removes variables that contain only a single value.
 
 Arguments:
-* `group`: An optional grouping variable. The zero-variance check is performed separately within each group.
+* `group`: Optional character string or `dplyr::vars()` to specify groups within which to identify zero-variance variables

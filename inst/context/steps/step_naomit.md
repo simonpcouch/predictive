@@ -1,6 +1,7 @@
 ## `step_naomit()`
 
-Removes rows that have `NA` values in any of the specified columns.
+Removes observations (rows) containing `NA` or `NaN` values.
 
 Arguments:
-* ...: One or more selectors for the columns to check for missing values.
+* `...`: Selectors for variables to check for missing values. If none provided, checks all variables.
+* `columns`: Selected variable names (populated by `prep()`).

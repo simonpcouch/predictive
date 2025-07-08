@@ -10,7 +10,16 @@ parsnip:::model_info_table
 relevant_models <-
   parsnip:::model_info_table %>%
   filter(mode %in% c("classification", "regression")) %>%
-  filter(!model %in% "auto_ml") %>%
+  filter(
+    !model %in%
+      c(
+        "auto_ml",
+        "surv_reg",
+        "discrim_linear",
+        "discrim_quad",
+        "discrim_regularized"
+      )
+  ) %>%
   filter(
     !engine %in%
       c(
@@ -69,6 +78,23 @@ Engines:
 * ...
 ----  
 
+Here's an example for bag_mlp:
+
+## `bag_mlp()`
+
+Bagged multilayer perceptron (MLP) models are ensembles of single-layer neural networks. Powerful for capturing complex non-linear patterns but slow to fit.
+
+Arguments:
+* `hidden_units`: # of units in the hidden layer. tune.
+* `penalty`: The L2 regularization (weight decay) penalty. tune.
+* `epochs`: # of training iterations. tune.
+
+Engines:
+* `nnet` (classification, regression)
+  - Requires baguette extension.
+
+----
+
 Exclude the '----' from the actual resulting file. Those are just for clear separation here.
 ",
     paste0(
@@ -76,7 +102,10 @@ Exclude the '----' from the actual resulting file. Those are just for clear sepa
       file.path("inst", "context", "models", paste0(model_type, ".md")),
       " with the provided tool."
     ),
-    "Be succinct in the documentation you write. Information-richness is the goal.",
+    "Be succinct, even terse, in the documentation you write. Information-richness is the goal.",
+    "For example, write 'tune' rather than 'tune this parameter', or '# of' instead of 'number of', or 'Requires baguette extension' rather than 'Requires the baguette extension package'.",
+    "The reader of the documentation generally knows how tidymodels works already and what to expect this documentation will look like.",
+    "Don't mention anything about censored regression, quantile regression, or any mode other than regression and classification. If an engine supports only censored regression, don't mention it. If an engine supports censored regression among other modes, don't mention it.",
     "Use your own knowledge to describe the speed of fitting. e.g. decision trees
     are generally fast-fitting, random forests less so.",
     do.call(

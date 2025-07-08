@@ -1,10 +1,11 @@
 ## `step_isomap()`
 
-Reduces the number of variables by computing a non-linear Isomap embedding. This can be computationally intensive.
+Creates new features using Isomap embedding, a form of multidimensional scaling that preserves geometric distances between data points using nearest neighbors. Computationally intensive.
 
 Arguments:
-* `num_terms`: The number of Isomap components to retain. Tunable.
-* `neighbors`: The number of neighbors used to create the embedding. The fit time is affected by this value. Tunable.
-* `options`: A list of options passed to `dimRed::Isomap()`.
-* `prefix`: A prefix for the new component variable names.
-* `keep_original_cols`: A logical indicating whether to keep the original variables.
+* `num_terms`: Number of Isomap dimensions to retain. Tunable.
+* `neighbors`: Number of nearest neighbors to use. Tunable.
+* `options`: List of options passed to `dimRed::Isomap()`.
+* `prefix`: Character string for the prefix of the new variables. Default is "Isomap".
+
+Requires packages: dimRed, RSpectra, igraph, and RANN. Center and scale variables prior to running Isomap for best results.

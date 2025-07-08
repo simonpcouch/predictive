@@ -1,8 +1,8 @@
 ## `step_ordinalscore()`
 
-Converts an ordinal factor to a single numeric variable.
+Converts ordinal factor variables into numeric scores.
 
 Arguments:
-* `...`: The ordinal factor variables to be converted.
-* `convert`: A function to convert the factor to a numeric score. Defaults to a 1, 2, 3, ... scale. Not tunable.
-
+* `...`: Variables to score. See `selections()`.
+* `columns`: Selected variable names (populated by `prep()`).
+* `convert`: Function that takes an ordinal factor vector and outputs numeric values. Default: `as.numeric`.

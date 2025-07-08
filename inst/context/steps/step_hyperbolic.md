@@ -1,8 +1,8 @@
 ## `step_hyperbolic()`
 
-Applies a hyperbolic transformation to numeric data.
+Transforms data using a hyperbolic function.
 
 Arguments:
-* `func`: The hyperbolic function to apply (`"sinh"`, `"cosh"`, or `"tanh"`). Not tunable.
-* `inverse`: Whether to apply the inverse of the function (e.g., `asinh`). Not tunable.
-
+* `func`: Hyperbolic function to use. Options: "sinh", "cosh", or "tanh".
+* `inverse`: Logical. Use the inverse function?
+* `columns`: Character vector of column names to transform.

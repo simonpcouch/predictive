@@ -1,13 +1,11 @@
 ## `step_classdist()`
 
-Calculates the Mahalanobis distance from numeric predictors to the centroid for each class of a categorical variable. This can be computationally intensive.
+Creates features measuring the Mahalanobis distance from observations to class centroids.
 
 Arguments:
-* `class`: A single categorical variable for classification.
-* `mean_func`: A function to compute the center of the distribution.
-* `cov_func`: A function to compute the covariance matrix.
-* `pool`: A logical; if `TRUE`, the covariance matrix is computed by pooling all classes.
-* `log`: A logical; if `TRUE`, the distances are log-transformed.
-* `prefix`: A character string prefix for the new distance columns.
-* `keep_original_cols`: A logical to retain the original predictors.
-
+* `class`: Bare name of a single categorical variable to use as the class.
+* `mean_func`: Function to compute the center of the distribution. Default: `mean`.
+* `cov_func`: Function to compute the covariance matrix. Default: `cov`.
+* `pool`: Logical. Should covariance matrix be computed by pooling data for all classes? Default: `FALSE`.
+* `log`: Logical. Should distances be transformed by natural log? Default: `TRUE`.
+* `prefix`: Character string for prefix of new variables. Default: "classdist_".

@@ -1,10 +1,10 @@
 ## `step_depth()`
 
-Calculates the data depth of numeric predictors relative to a categorical class variable. A new column is created for each class.
+Converts numeric data into class-specific data depth measurements (proximity to center of distribution).
 
 Arguments:
-* `class`: A single categorical variable to use as the class.
-* `metric`: The method for calculating depth (e.g., `"halfspace"`, `"Mahalanobis"`).
-* `options`: A list of options for the underlying depth functions.
-* `prefix`: A prefix for the names of the new columns.
-* `keep_original_cols`: Whether to retain the original predictors.
+* `class`: Specifies the single categorical variable used as class
+* `metric`: Character. Depth metric ("halfspace", "potential", "Mahalanobis", "simplicialVolume", "spatial", "zonoid")
+* `options`: List of options for the underlying depth functions
+* `prefix`: Character prefix for new columns (default "depth_")
+* `data`: Training data (automatically stored after `prep()`)

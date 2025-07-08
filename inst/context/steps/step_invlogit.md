@@ -1,4 +1,6 @@
 ## `step_invlogit()`
 
-Transforms numeric data to be between zero and one using the inverse logit function: `1 / (1 + exp(-x))`. This is not a computationally intensive step.
+Transforms data from real values to be between zero and one using the inverse logit function `f(x) = 1/(1+exp(-x))`.
 
+Arguments:
+* `columns`: Optional. Columns to transform.

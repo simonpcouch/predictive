@@ -1,11 +1,10 @@
 ## `step_nnmf_sparse()`
 
-Performs a non-negative matrix factorization of numeric predictors with a lasso penalty to create new components. This step can be computationally intensive.
+Converts numeric data into non-negative components using non-negative matrix factorization with lasso penalization.
 
 Arguments:
-* `num_comp`: The number of components to retain. Tunable.
-* `penalty`: A non-negative penalization factor for the loadings. Tunable.
-* `options`: A list of options to pass to `RcppML::nmf()`.
-* `prefix`: A character string for the prefix of the new component variables.
-* `seed`: An integer to seed the factorization computation for reproducibility.
-* `keep_original_cols`: A logical indicating whether to keep the original variables.
+* `num_comp`: Number of components to retain (integer). Tunable. If greater than the number of columns or possible components, a smaller value is used. If 0, no transformation occurs.
+* `penalty`: Non-negative regularization factor for loadings (usually between 0 and 1). Tunable.
+* `options`: List of options passed to `nmf()` in the RcppML package. Note that `A`, `k`, `L1`, and `seed` should not be passed here.
+* `prefix`: Character string prefix for the resulting new variables. Default is "NNMF".
+* `seed`: Integer used to set the seed when computing the factorization.

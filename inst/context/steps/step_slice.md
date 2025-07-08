@@ -1,7 +1,7 @@
 ## `step_slice()`
 
-Slices rows by their integer position. Note that this can lead to unexpected results when applied to new data.
+Filters rows by position using dplyr's slice functionality.
 
 Arguments:
-* ...: Integer row values to keep. Not tunable.
-
+* `...`: Integer row positions to keep
+* `inputs`: Quosure of values given by `...`

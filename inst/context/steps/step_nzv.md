@@ -1,7 +1,10 @@
 ## `step_nzv()`
 
-Removes predictors with near-zero variance. These predictors have very few unique values and a large ratio of the most common value to the second most common value.
+Removes variables with near-zero variance (highly sparse and unbalanced).
 
 Arguments:
-* `freq_cut`: The ratio of the frequency of the most common value to the second most common value, used to flag predictors for removal. Tunable.
-* `unique_cut`: The percentage of unique values out of the total number of samples, used to flag predictors for removal. Tunable.
+* `...`: Selectors for variables to potentially remove
+* `freq_cut`: Numeric. Threshold for ratio of most common to second most common value. Default: 95/5
+* `unique_cut`: Numeric. Maximum percent of unique values allowed. Default: 10
+* `options`: List. Alternative way to pass filtering parameters
+* `removals`: Character. Column names that should be removed (determined by `prep()`)

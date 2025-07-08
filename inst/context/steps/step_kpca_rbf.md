@@ -1,10 +1,10 @@
 ## `step_kpca_rbf()`
 
-Extracts nonlinear principal components using a radial basis function kernel. This is computationally intensive.
+Performs radial basis function kernel PCA to extract nonlinear components from numeric data.
 
 Arguments:
-* `num_comp`: The number of components to retain. This argument is tunable.
-* `sigma`: The radial basis function parameter. This argument is tunable.
-* `prefix`: A character string for the prefix of the resulting new variables.
-* `keep_original_cols`: A logical to keep the original variables in the output.
-
+* `num_comp`: Number of components to retain (integer, default: 5). Tunable.
+* `sigma`: Parameter for the radial basis function (numeric, default: 0.2). Tunable.
+* `prefix`: Character string for the prefix of the resulting new variables (default: "kPC").
+* `columns`: Character vector of variable names selected for the transformation.
+* `res`: Storage for the kernel PCA results after training (populated by `prep()`).

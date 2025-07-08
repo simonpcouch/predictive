@@ -1,25 +1,23 @@
 ## `poisson_reg()`
 
-Poisson regression is a generalized linear model used for modeling count data. It is a fundamental statistical method that is very fast to fit and highly interpretable, making it an excellent baseline for count outcomes.
+Poisson regression models for count data that follow a Poisson distribution. Relatively fast to fit with standard engines.
 
 Arguments:
-* `penalty`: The total amount of regularization. It is recommended to tune this parameter when using the `glmnet` engine.
-* `mixture`: The proportion of L1 (lasso) vs. L2 (ridge) regularization. It is recommended to tune this parameter when using the `glmnet` engine.
+* `penalty`: Non-negative regularization amount. tune.
+* `mixture`: Value between 0 and 1 for proportion of L1 regularization (1 = lasso, 0 = ridge). tune.
 
 Engines:
 * `glm` (regression)
-    - The default engine. A fast, standard implementation.
-    - Requires the `poissonreg` extension package.
-* `glmnet` (regression)
-    - Implements regularized Poisson regression (lasso, ridge, elastic net), useful for high-dimensional data. Supports `penalty` and `mixture`.
-    - Requires the `poissonreg` extension package.
-* `h2o` (regression)
-    - A scalable engine designed for very large datasets.
-    - Requires the `agua` extension package.
+  - Requires poissonreg extension.
+* `glmnet` (regression) 
+  - Requires poissonreg extension.
+  - Efficient for high-dimensional data with regularization.
 * `gee` (regression)
-    - For modeling correlated or clustered count data (e.g., longitudinal studies).
-    - Requires the `multilevelmod` extension package.
+  - Requires multilevelmod extension.
+  - Useful for clustered or longitudinal data.
 * `glmer` (regression)
-    - For multilevel/hierarchical models with random effects.
-    - Requires the `multilevelmod` extension package.
-
+  - Requires multilevelmod extension.
+  - Supports random effects for hierarchical/nested data.
+* `h2o` (regression)
+  - Requires agua extension.
+  - Efficient for large datasets, supports distributed computing.

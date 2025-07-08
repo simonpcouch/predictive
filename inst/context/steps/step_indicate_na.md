@@ -1,9 +1,9 @@
 ## `step_indicate_na()`
 
-Creates new binary columns to indicate where `NA` values exist.
+Creates binary columns that indicate which observations are missing in the specified variables.
 
 Arguments:
-* `prefix`: A character prefix for the new indicator columns.
-* `sparse`: Whether to create sparse indicator columns (`"yes"`, `"no"`, or `"auto"`).
-* `keep_original_cols`: `TRUE` to keep the original columns that are being checked for missingness.
-
+* `...`: Selectors for variables for which to create missing value indicators
+* `columns`: Character vector of selected variable names (populated by `prep()`)
+* `prefix`: Character string prefix for new column names (default: "na_ind")
+* `sparse`: Whether columns should be sparse vectors ("yes", "no", or "auto", default: "auto")

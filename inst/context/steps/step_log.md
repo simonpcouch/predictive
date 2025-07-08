@@ -1,9 +1,9 @@
 ## `step_log()`
 
-Takes the logarithm of numeric variables.
+Applies a logarithmic transformation to numeric data.
 
 Arguments:
-* `base`: A numeric value for the base of the logarithm. Not tunable.
-* `offset`: A value to add to the data before logging to avoid `log(0)`. Not tunable.
-* `signed`: A logical indicating whether to calculate the signed logarithm, allowing for negative values. Not tunable.
-
+* `base`: Numeric value for the logarithm base (default: exp(1))
+* `offset`: Value to add to data prior to logging (to avoid log(0))
+* `columns`: Character vector of column names to transform
+* `signed`: Logical. If TRUE, takes the signed log (sign(x) * log(abs(x)) when |x| ≥ 1, 0 when |x| < 1). Ignores `offset` if TRUE

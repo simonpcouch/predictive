@@ -1,9 +1,11 @@
 ## `step_discretize()`
 
-Converts numeric variables into a factor with bins of approximately equal size.
+Converts numeric data into factors with bins containing approximately equal numbers of data points.
 
 Arguments:
-* num_breaks: The number of cuts to make for the bins. Tunable.
-* min_unique: The minimum number of unique values required to discretize a variable. Tunable.
-* options: A list of options for the underlying `discretize()` function (e.g., `list(prefix = "bin")`).
+* `...`: Variables to discretize
+* `num_breaks`: Integer. Number of cut points. Tunable.
+* `min_unique`: Integer. Minimum threshold of (unique values)/(cuts+1) required to perform binning. Tunable.
+* `options`: List of options passed to `discretize()`. Default: `list(prefix = "bin")`
 
+Note: Missing values become a separate level named `prefix_missing`.

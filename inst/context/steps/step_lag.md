@@ -1,9 +1,9 @@
 ## `step_lag()`
 
-Lags variables, creating new columns with data from previous rows. This step assumes that the data are already in the proper sequential order.
+Creates new columns of lagged data based on numeric or date values.
 
 Arguments:
-* `lag`: An integer vector of lags to apply.
-* `prefix`: A character prefix for the new lagged column names.
-* `default`: Value to use for padding the new observations created by lagging (defaults to NA).
-* `keep_original_cols`: A logical indicating whether to keep the original variables in the output.
+* `lag`: Vector of positive integers. Each column will be lagged by each value.
+* `prefix`: Prefix for generated column names. Default: "lag_".
+* `default`: Value to fill empty rows left by lagging. Default: NA.
+* `columns`: Variables to lag. Automatically populated by `prep()`.

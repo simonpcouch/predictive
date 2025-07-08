@@ -1,9 +1,9 @@
 ## `step_bs()`
 
-Generates B-spline basis functions for variables to model non-linear trends. This can be computationally intensive.
+Creates B-spline basis expansion of variables to model nonlinear relationships.
 
 Arguments:
-* `deg_free`, the degrees of freedom for the spline. Higher values create more flexible curves and increase fit time. Tunable.
-* `degree`, the degree of the polynomial spline. Tunable.
-* `options`, a list of options for `splines::bs()`.
-* `keep_original_cols`, a logical to keep the original variables.
+* `...`: Variables to transform
+* `deg_free`: Integer. Degrees of freedom for the spline. Higher values create more flexible curves. Single degree = rescaled original data
+* `degree`: Integer. Degree of polynomial spline. Default is 3
+* `options`: List. Additional options for `splines::bs()` excluding `x`, `degree`, or `df`

@@ -1,6 +1,8 @@
 ## `step_impute_mean()`
 
-Replaces missing numeric data with the mean of the variable.
+Imputes missing values in numeric variables using the mean value from the training set.
 
 Arguments:
-* trim: The fraction (0 to 0.5) of observations to be trimmed from each end of the variable before the mean is computed. This argument is tunable.
+* `...`: Variables to impute. Use tidy selection.
+* `means`: Named numeric vector of means. `NULL` until `prep()` is called.
+* `trim`: Fraction (0 to 0.5) of observations to trim from each end before computing the mean.

@@ -1,10 +1,9 @@
 ## `step_spline_b()`
 
-Generates a B-spline basis expansion of a numeric variable.
+Creates B-spline features from numeric predictors for modeling non-linear relationships.
 
 Arguments:
-* `deg_free`: The degrees of freedom for the spline. Tunable.
-* `degree`: The polynomial degree for the spline. Tunable.
-* `complete_set`: If `TRUE`, returns the complete basis matrix.
-* `options`: A list of options for `splines2::bSpline()`.
-* `keep_original_cols`: If `TRUE`, keeps the original variable.
+* `deg_free`: Integer. Degrees of freedom (default: 10). Higher values create more flexible curves. Tunable.
+* `degree`: Integer. Degree of polynomial (default: 3). Zero allowed for piecewise constant basis functions. Tunable.
+* `complete_set`: Logical. If TRUE, returns complete basis matrix; if FALSE, excludes first basis.
+* `options`: List of options for `splines2::bSpline()` (excluding `x`, `df`, `degree`, and `intercept`). Setting `periodic = TRUE` creates periodic splines.

@@ -1,6 +1,7 @@
 ## `step_mutate()`
 
-Adds new variables, similar to `dplyr::mutate()`. Be cautious of data leakage when creating new variables based on global properties of the data, like the mean.
+Add new variables using dplyr's mutate functionality.
 
 Arguments:
-* `.pkgs`: A character vector of R package names that should be loaded when the recipe is baked.
+* `...`: Name-value pairs of expressions for creating new variables
+* `.pkgs`: Character vector of package names used in expressions, if non-base functions are used

@@ -1,7 +1,7 @@
 ## `step_intercept()`
 
-Adds a column of constants.
+Adds an intercept or constant column to the data.
 
 Arguments:
-* name: Name for the new column.
-* value: The constant value for the new column.
+* `name`: Character name for the newly added column. Default is "intercept".
+* `value`: Numeric constant to fill the intercept column. Default is 1L.

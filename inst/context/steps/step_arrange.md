@@ -1,6 +1,7 @@
 ## `step_arrange()`
 
-Sorts rows based on one or more variables.
+Sorts rows of the data using dplyr's arrange functionality.
 
 Arguments:
-* ...: One or more unquoted variable names to sort by. Use `desc()` for descending order.
+* `...`: Comma separated unquoted variable names. Use `desc()` to sort in descending order.
+* `inputs`: Quosure of values given by `...`. Usually set automatically.

@@ -1,8 +1,8 @@
 ## `step_other()`
 
-Collapses infrequent categorical levels into a new "other" level.
+Collapses infrequent categorical levels into an "other" category.
 
 Arguments:
-* threshold, A numeric value used to determine which levels to pool. If between 0 and 1, it's a proportion of the total samples. If >= 1, it's a frequency count. Tunable.
-* other, A character string for the name of the new "other" category.
-
+* `threshold`: Numeric. If < 1: levels with occurrence rate below this are pooled. If >= 1: levels occurring fewer times than this are pooled. Tunable.
+* `other`: Character. Value for the pooled category. Default: "other".
+* `objects`: List containing information about levels to pool (created by `prep()`).

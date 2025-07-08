@@ -1,8 +1,7 @@
 ## `step_poly()`
 
-Creates new features from a variable using orthogonal polynomials to model non-linear relationships.
+Creates new columns that are orthogonal polynomial basis expansions of variables.
 
 Arguments:
-* `degree`: The polynomial degree. Tunable.
-* `options`: A list of options for `stats::poly()`, such as `raw = TRUE` to use regular (non-orthogonal) polynomials.
-* `keep_original_cols`: A logical to keep the original variables in the output.
+* `degree`: Integer. Polynomial degree. Default: 2. Tunable.
+* `options`: List of options for `stats::poly()`. Setting `raw = TRUE` produces regular (non-orthogonalized) polynomials.

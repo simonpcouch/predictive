@@ -1,8 +1,14 @@
 ## `step_impute_roll()`
 
-Imputes missing values in numeric data using a rolling window statistic.
+Imputes missing values in numeric variables using a rolling window statistic.
 
 Arguments:
-* `statistic`: The function to compute the imputed value (e.g. median, mean). This argument is tunable.
-* `window`: The size of the rolling window. An odd integer > 1. This argument is tunable.
+* `columns`: Character vector of column names to impute
+* `statistic`: Function to compute imputation value (e.g., median, mean). Tunable.
+* `window`: Size of the window around a point to be imputed. Should be odd integer >1. Tunable.
 
+Notes:
+* On tails, window shifts toward ends
+* When window contains all NA, returns NA
+* Imputation is based on original values only; previous imputations aren't used
+* Case weights not supported

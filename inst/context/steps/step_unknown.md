@@ -1,7 +1,7 @@
 ## `step_unknown()`
 
-Assigns a new factor level to nominal variables for values not observed in the training set. Note: this step will convert character columns to factors.
+Assigns missing factor levels to a new "unknown" category.
 
 Arguments:
-* `new_level`: The character string for the new factor level. Not tunable.
-
+* `new_level`: Character string for the new level name. Default is "unknown".
+* `objects`: Internal list containing factor level information.

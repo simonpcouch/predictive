@@ -1,10 +1,9 @@
 ## `step_ica()`
 
-Extracts independent components from numeric data to isolate distinct, non-Gaussian signals. This is a computationally intensive step.
+Converts numeric data into independent components using FastICA.
 
 Arguments:
-* `num_comp`: The number of components to retain as new predictors. This argument is tunable.
-* `options`: A list of options to pass to `fastICA::fastICA()`.
-* `seed`: An integer to set the random number stream for reproducibility.
-* `prefix`: A character string for the prefix of the new component variable names.
-* `keep_original_cols`: A logical indicating whether to keep the original variables in the output.
+* `num_comp`: Number of components to retain. If greater than possible components, a smaller value is used. If 0, no transformation occurs. Tunable.
+* `options`: List of options passed to `fastICA::fastICA()` (don't pass `X` or `n.comp`).
+* `seed`: Integer to set random number stream before running ICA.
+* `prefix`: Character string prefix for new variables.

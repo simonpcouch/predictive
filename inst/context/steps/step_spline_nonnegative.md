@@ -1,11 +1,10 @@
 ## `step_spline_nonnegative()`
 
-Creates non-negative M-spline features from a numeric variable to estimate non-linear trends.
+Creates non-negative spline features using M-splines.
 
 Arguments:
-* `deg_free`: An integer for the degrees of freedom for the spline. Higher values create more flexible curves. (tunable)
-* `degree`: A non-negative integer for the degree of the piecewise polynomial (e.g., 3 for cubic splines). (tunable)
-* `complete_set`: A logical. If `TRUE`, the complete basis matrix is returned.
-* `options`: A list of options for `splines2::mSpline()`.
-* `keep_original_cols`: A logical to keep the original variables in the output.
-
+* `deg_free`: Degrees of freedom for the b-spline (default: 10, tunable). Higher values create more flexible curves.
+* `degree`: Degree of piecewise polynomial (default: 3, tunable). Zero creates piecewise constant basis functions.
+* `complete_set`: Logical. If TRUE, returns complete basis matrix; if FALSE, excludes first basis.
+* `options`: List of options for `splines2::mSpline()`. Can include `periodic = TRUE` for periodic splines.
+* `results`: List of objects created after training.

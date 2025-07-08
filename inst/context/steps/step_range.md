@@ -1,8 +1,9 @@
 ## `step_range()`
 
-Scales numeric data to a specific range (e.g., [0, 1]).
+Normalizes numeric data to be within a specific range.
 
 Arguments:
-* `min`, `max`: The minimum and maximum value of the scaled data.
-* `clipping`: A logical. If `TRUE` (the default), new data is truncated to stay within the `min` and `max` range.
-* `ranges`: A character vector of variables that will be normalized.
+* `min`: Single numeric value for the smallest value in the transformed data. Default is 0.
+* `max`: Single numeric value for the largest value in the transformed data. Default is 1.
+* `clipping`: Logical. Should values in new data be forced inside `min` and `max`? Default is TRUE.
+* `ranges`: Character vector of variables that will be normalized (automatically determined by `prep()`).

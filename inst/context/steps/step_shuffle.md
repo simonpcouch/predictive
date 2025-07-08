@@ -1,4 +1,6 @@
 ## `step_shuffle()`
 
-Randomly shuffles the values in one or more columns.
+Randomly changes the order of rows for selected variables.
 
+Arguments:
+* `columns`: Character string of selected variable names

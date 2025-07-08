@@ -1,6 +1,8 @@
 ## `step_impute_linear()`
 
-Imputes missing data in numeric variables using a linear regression model.
+Imputes missing data in numeric variables using linear regression models.
 
 Arguments:
-* `impute_with`: Bare names or selector functions for variables to use as predictors in the imputation model.
+* `...`: Numeric variables to be imputed
+* `impute_with`: Variables used as predictors in the imputation models
+* `models`: Storage for fitted linear models (populated by `prep()`)

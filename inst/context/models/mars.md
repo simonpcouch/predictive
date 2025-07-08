@@ -1,14 +1,13 @@
 ## `mars()`
 
-Multivariate Adaptive Regression Splines (MARS) models create flexible, non-linear models by fitting piecewise linear functions (hinges). They are useful for capturing non-linearities and interactions while maintaining some interpretability. Fitting speed is generally fast.
+Multivariate adaptive regression splines (MARS) creates segmented regression models with automatic feature selection. Moderately fast to fit.
 
 Arguments:
-* `num_terms`: The number of model terms (hinge functions). It is recommended to tune this parameter to control model complexity.
-* `prod_degree`: The highest degree of interaction between variables. It is recommended to tune this parameter.
-* `prune_method`: The method used to prune the model and prevent overfitting. It is recommended to tune this parameter.
+* `num_terms`: # of features to retain in final model (including intercept). tune.
+* `prod_degree`: Highest possible interaction degree. tune.
+* `prune_method`: The pruning method.
 
 Engines:
 * `earth` (classification, regression)
-    - The default and only engine. It is a robust and well-established implementation of MARS.
-    - No parsnip extension package is required.
-
+  - Creates segmented models by generating hinge functions for predictors.
+  - No additional packages required.

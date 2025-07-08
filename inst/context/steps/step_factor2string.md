@@ -1,4 +1,7 @@
 ## `step_factor2string()`
 
-Converts selected factor columns to character strings. This step is useful for ancillary columns not used in the model, such as identifiers.
+Converts factor columns to strings.
 
+Arguments:
+* `...`: Variables to convert. Use tidy selection.
+* `columns`: Character vector of selected variable names.

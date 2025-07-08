@@ -1,8 +1,7 @@
 ## `step_time()`
 
-Converts date-time data into numeric or factor features.
+Converts date-time data into factor or numeric variables representing time components.
 
 Arguments:
-* `features`: A character string for which time features to create (e.g. `hour`, `minute`, `second`, `am`, `hour12`, `decimal_day`). Not tunable.
-* `keep_original_cols`: A logical indicating whether to keep the original variables. Not tunable.
-
+* `features`: Character vector of time features to extract. Options: `am` (is AM), `hour`, `hour12`, `minute`, `second`, `decimal_day`. Default: `c("hour", "minute", "second")`
+* `columns`: Character vector of variable names to operate on (populated by `prep()`)

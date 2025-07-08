@@ -1,9 +1,10 @@
 ## `step_kpca()`
 
-Extracts kernel principal components from numeric variables. This is a computationally intensive step.
+Converts numeric data into principal components using a kernel basis expansion.
 
 Arguments:
-* `num_comp`, the number of components to retain. This is tunable.
-* `options`, a list of options for `kernlab::kpca()`. The `kernel` and its parameters (`kpar`) are specified here. The choice of kernel and its parameters can significantly affect model performance and fit time. This is tunable.
-* `prefix`, a character prefix for the new component variables.
-* `keep_original_cols`, a logical to keep the original variables.
+* `num_comp`: Number of components to retain (default: 5). If greater than available columns, a smaller value is used. If 0, no transformation occurs.
+* `options`: List of options to `kernlab::kpca()`. Defaults: `kernel = "rbfdot"`, `kpar = list(sigma = 0.2)`.
+* `prefix`: Character string for the prefix of new variables (default: "kPC").
+* `res`: Storage location for trained kernlab::kpca() object (populated by prep()).
+* `columns`: Character vector of selected variables (populated by prep()).

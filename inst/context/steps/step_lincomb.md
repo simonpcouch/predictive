@@ -1,6 +1,8 @@
 ## `step_lincomb()`
 
-Removes numeric variables that are linear combinations of other variables.
+Removes numeric variables that have exact linear combinations between them.
 
 Arguments:
-* `max_steps`: The maximum number of iterations to remove linear combinations. Not tunable.
+* `...`: Selectors for variables to check for linear combinations
+* `max_steps`: Number of times to apply the algorithm
+* `removals`: Character string of columns that should be removed (determined during `prep()`)

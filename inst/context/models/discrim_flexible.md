@@ -1,14 +1,12 @@
 ## `discrim_flexible()`
 
-Flexible discriminant analysis uses MARS (Multivariate Adaptive Regression Splines) to create non-linear features, allowing for non-linear decision boundaries. The fitting speed is moderate, faster than many non-linear methods but slower than linear discriminant analysis.
+Flexible discriminant analysis model using MARS (Multivariate Adaptive Regression Splines) for creating nonlinear features. Moderately fast fitting with good performance on nonlinear classification problems.
 
 Arguments:
-* `num_terms`: The number of features to retain in the final model. It is recommended to tune this parameter.
-* `prod_degree`: The highest degree of interaction between variables. It is recommended to tune this parameter.
-* `prune_method`: The method used to prune the model. It is recommended to tune this parameter.
+* `num_terms`: Number of features retained in final model (including intercept). tune.
+* `prod_degree`: Highest possible interaction degree. tune.
+* `prune_method`: Method used for pruning the model.
 
 Engines:
 * `earth` (classification)
-    - A good choice when decision boundaries are suspected to be non-linear.
-    - Requires the `discrim` extension package.
-
+  - Requires discrim extension.
