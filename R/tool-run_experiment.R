@@ -98,11 +98,31 @@ run_experiment <- function(
     res <- mirai::collect_mirai(m)
     if (mirai::is_error_value(res)) {
       return(ellmer::ContentToolResult(
-        error = res
+        error = res,
+        extra = list(
+          display_tool_request = FALSE,
+          display = list(
+            html = shiny::HTML(sprintf(
+              '<p class="shiny-tool-request">Experiment failed (%s, %s)</p>',
+              name,
+              "sync"
+            ))
+          )
+        )
       ))
     }
     return(ellmer::ContentToolResult(
-      value = btw::btw_this(res$metrics)
+      value = btw::btw_this(res$metrics),
+      extra = list(
+        display_tool_request = FALSE,
+        display = list(
+          html = shiny::HTML(sprintf(
+            '<p class="shiny-tool-request">Experiment completed (%s, %s)</p>',
+            name,
+            "sync"
+          ))
+        )
+      )
     ))
   }
 
@@ -119,6 +139,16 @@ run_experiment <- function(
       want to learn how they went, hand over control to the user."
       ),
       collapse = ""
+    ),
+    extra = list(
+      display_tool_request = FALSE,
+      display = list(
+        html = shiny::HTML(sprintf(
+          '<p class="shiny-tool-request">Experiment launched (%s, %s)</p>',
+          name,
+          if (synchronous) "sync" else "async"
+        ))
+      )
     )
   )
 }
@@ -158,6 +188,14 @@ run_experiment_safely <- function(
       ellmer::ContentToolResult(
         error = paste0(error_msg, collapse = "\n"),
         extra = list(
+          display_tool_request = FALSE,
+          display = list(
+            html = shiny::HTML(sprintf(
+              '<p class="shiny-tool-request">Experiment failed (%s, %s)</p>',
+              name,
+              if (synchronous) "sync" else "async"
+            ))
+          ),
           script = mock_script(
             recipe = recipe,
             model = model,
