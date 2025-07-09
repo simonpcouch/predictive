@@ -25,7 +25,8 @@ run_experiment <- function(
     started_at = Sys.time(),
     completed_at = NULL,
     seen_by_model = FALSE,
-    purpose = purpose
+    purpose = purpose,
+    synchronous = synchronous
   )
 
   m <- mirai::mirai(
@@ -103,7 +104,7 @@ run_experiment <- function(
           display_tool_request = FALSE,
           display = list(
             html = shiny::HTML(sprintf(
-              '<p class="shiny-tool-request">Experiment failed (%s, %s)</p>',
+              '<p class="shiny-tool-request">Experiment launched (%s, %s)</p>',
               name,
               "sync"
             ))
@@ -117,7 +118,7 @@ run_experiment <- function(
         display_tool_request = FALSE,
         display = list(
           html = shiny::HTML(sprintf(
-            '<p class="shiny-tool-request">Experiment completed (%s, %s)</p>',
+            '<p class="shiny-tool-request">Experiment launched (%s, %s)</p>',
             name,
             "sync"
           ))

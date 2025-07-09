@@ -8,6 +8,7 @@ the <- rlang::new_environment()
 # - started_at: POSIXct timestamp
 # - completed_at: POSIXct timestamp (NULL until finished)
 # - seen_by_model: logical (whether model has been told about results)
+# - synchronous: logical (whether experiment was run synchronously)
 the$experiments <- list()
 
 running_experiments <- function() {
@@ -17,6 +18,13 @@ running_experiments <- function() {
 new_experiments <- function() {
   names(Filter(
     function(exp) exp$status == "completed" && !exp$seen_by_model,
+    the$experiments
+  ))
+}
+
+new_async_experiments <- function() {
+  names(Filter(
+    function(exp) exp$status == "completed" && !exp$seen_by_model && !exp$synchronous,
     the$experiments
   ))
 }

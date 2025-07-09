@@ -1,3 +1,19 @@
 .data-frame {
   font-size: 0.875em;
 }
+
+.shiny-experiment-notification {
+  margin: 0;
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+  padding: 0.5em;
+  font-size: 0.8em;
+  color: var(--bs-secondary);
+  font-weight: 400;
+  font-style: italic;
+  display: block;
+  align-items: center;
+  user-select: none;
+  text-align: center;
+}
+

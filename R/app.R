@@ -109,20 +109,6 @@ predictive <- function(new_session = FALSE) {
       )
     })
 
-    observeEvent(
-      new_experiments(),
-      {
-        if (length(new_experiments()) > 0) {
-          showNotification(
-            "New experiment results available! Send any message to notify the model.",
-            type = "message",
-            duration = NULL
-          )
-        }
-      },
-      ignoreInit = TRUE
-    )
-
     format_single_experiment <- function(name, exp) {
       parts <- c(
         paste0(
@@ -350,8 +336,24 @@ predictive <- function(new_session = FALSE) {
 
       experiment_results <- format_experiment_results()
       .last_experiment_results_shown <<- experiment_results
-      for (name in new_experiments()) {
+
+      new_async_exp_names <- new_async_experiments()
+      for (name in new_async_exp_names) {
         the$experiments[[name]]$seen_by_model <- TRUE
+      }
+
+      if (length(new_async_exp_names) > 0) {
+        notification_html <- sprintf(
+          '<p class="shiny-experiment-notification">%s</p>',
+          cli::format_inline(
+            "Notified with experiment results {new_async_exp_names}."
+          )
+        )
+        chat_append_message(
+          "chat",
+          list(role = "assistant", content = HTML(notification_html)),
+          chunk = FALSE
+        )
       }
 
       full_input <- paste0(prefix, user_input, experiment_results)
