@@ -40,3 +40,21 @@ Also, web fetch for this: https://mirai.r-lib.org/articles/mirai-promises.html
 - **UI Integration**: Seamless notifications and result presentation
 - **Error Handling**: Graceful handling of failed experiments
 - **Session Management**: Proper cleanup and state restoration
+
+## ExtendedTask and Async Framework
+
+### Purpose of ExtendedTask in This App
+
+The app uses `shiny::ExtendedTask` for the chat streaming process to keep the UI responsive while the model generates responses. The ExtendedTask wraps the entire streaming pipeline from tool execution through text generation. The streaming of text from the model is itself the ExtendedTask; while the LLM responds to the user, the app is able to respond to other reactives while tokens stream in.
+
+### Documentation to Read
+
+Future AI assistants working on ExtendedTask issues should read:
+
+1. **Shiny ExtendedTask**: https://shiny.posit.co/r/articles/improve/nonblocking/
+   - Understanding when ExtendedTask blocks vs. yields control
+   - Promise-based patterns for responsiveness
+
+2. **mirai-promises integration**: https://mirai.r-lib.org/articles/mirai-promises.html#shiny-extendedtask-introduction
+   - How mirai provides event-driven promises
+   - Patterns for ExtendedTask with mirai
