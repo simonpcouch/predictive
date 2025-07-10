@@ -54,7 +54,8 @@ predictive <- function(new_session = FALSE) {
         div(
           id = "notification-area",
           style = "padding: 4px 12px; margin-bottom: 4px;",
-          uiOutput("experiment_notification")
+          uiOutput("experiment_notification"),
+          uiOutput("stream_interrupt_button")
         )
       ),
       card(
@@ -294,6 +295,23 @@ predictive <- function(new_session = FALSE) {
       start_chat_request("Please review the new experiment results.")
     })
 
+    output$stream_interrupt_button <- renderUI({
+      if (chat_stream_task$status() == "running") {
+        actionButton(
+          "interrupt_stream",
+          "Stop",
+          class = "btn-outline-danger",
+          style = "font-size: 11px; padding: 4px 12px; border-radius: 12px; background-color: white; border: 1px solid #dc3545; color: #dc3545; margin-top: 4px;"
+        )
+      } else {
+        NULL
+      }
+    })
+
+    observeEvent(input$interrupt_stream, {
+      globals$stream_interrupt_signal <- TRUE
+    })
+
     # Debounced card click handler
     card_click_debounced <- debounce(reactive(input$experiment_card_click), 200)
 
@@ -392,6 +410,8 @@ predictive <- function(new_session = FALSE) {
       }
     }
     start_chat_request <- function(user_input) {
+      globals$stream_interrupt_signal <- FALSE
+      
       prefix <- if (restored_since_last_turn) {
         paste0(
           "(Continuing previous chat session. The R environment may have ",
@@ -435,7 +455,10 @@ predictive <- function(new_session = FALSE) {
     observeEvent(
       chat_stream_task$status(),
       {
-        if (chat_stream_task$status() == "success") {
+        status <- chat_stream_task$status()
+        if (status == "success") {
+          pending_content <- take_pending_output()
+          
           tokens <- chat$get_tokens(include_system_prompt = FALSE)
           input <- sum(tokens$tokens[tokens$role == "user"])
           output <- sum(tokens$tokens[tokens$role == "assistant"])
@@ -448,11 +471,60 @@ predictive <- function(new_session = FALSE) {
           cat("\n")
           .last_chat <<- chat
 
+          user_input <- chat_stream_task$result()$user_input
+          
+          if (grepl("\\*\\[Interrupted\\]\\*", pending_content)) {
+            last_turn <- chat$last_turn("assistant")
+            incomplete_tool_requests <- list()
+            for (content in last_turn@contents) {
+              if (S7::S7_inherits(content, ellmer::ContentToolRequest)) {
+                incomplete_tool_requests <- append(incomplete_tool_requests, list(content))
+              }
+            }
+            
+            if (length(incomplete_tool_requests) > 0) {
+              tool_results <- list()
+              for (tool_request in incomplete_tool_requests) {
+                tool_results <- append(tool_results, list(
+                  ellmer::ContentToolResult(
+                    error = "The tool call was interrupted during execution.",
+                    request = tool_request
+                  )
+                ))
+              }
+              
+              turns <- chat$get_turns()
+              turns <- append(turns, list(ellmer::Turn("user", tool_results)))
+              
+              chat$set_turns(turns)
+            } else {
+              chat$add_turn(
+                ellmer::Turn("user", list(ellmer::ContentText(user_input))),
+                ellmer::Turn("assistant", list(ellmer::ContentText(pending_content)))
+              )
+            }
+          }
+          
           globals$turns <- chat$get_turns()
           save_messages(
-            list(role = "user", content = chat_stream_task$result()$user_input),
-            list(role = "assistant", content = take_pending_output())
+            list(role = "user", content = user_input),
+            list(role = "assistant", content = pending_content)
           )
+        } else if (status %in% c("error", "cancelled")) {
+          pending_content <- take_pending_output()
+          if (nzchar(pending_content)) {
+            globals$turns <- chat$get_turns()
+            user_input <- if (status == "error" && !is.null(chat_stream_task$result())) {
+              chat_stream_task$result()$user_input
+            } else {
+              "..."
+            }
+            save_messages(
+              list(role = "user", content = user_input),
+              list(role = "assistant", content = pending_content)
+            )
+            .last_chat <<- chat
+          }
         }
       },
       ignoreInit = TRUE
@@ -471,11 +543,13 @@ globals <- new.env(parent = emptyenv())
 globals$turns <- NULL
 globals$ui_messages <- fastmap::fastqueue()
 globals$pending_output <- fastmap::fastqueue()
+globals$stream_interrupt_signal <- FALSE
 
 reset_state <- function() {
   globals$turns <- NULL
   globals$ui_messages$reset()
   globals$pending_output$reset()
+  globals$stream_interrupt_signal <- FALSE
   invisible()
 }
 
@@ -500,13 +574,17 @@ take_pending_output <- function() {
   paste(collapse = "", chunks)
 }
 
-# Stream decorator that saves each chunk to pending_output
 save_stream_output <- function() {
   coro::async_generator(function(stream) {
     session <- getDefaultReactiveDomain()
     for (chunk in coro::await_each(stream)) {
       if (session$isClosed()) {
         req(FALSE)
+      }
+      if (globals$stream_interrupt_signal) {
+        globals$stream_interrupt_signal <- FALSE
+        save_output_chunk("\n\n*[Interrupted]*")
+        break
       }
       save_output_chunk(chunk)
       coro::yield(chunk)

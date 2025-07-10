@@ -73,3 +73,7 @@ Problems to watch for:
 - Flickering without proper state hash tracking
 - Timing issues if experiments are marked as seen before `start_chat_request()` captures them
 - Button persistence without proper click state tracking
+
+## Stream Interruption
+
+A stop button appears during streaming and sets `globals$stream_interrupt_signal` when clicked. The `save_stream_output()` function checks this flag on each chunk and breaks the loop while adding an "*[Interrupted]*" marker. For interrupted tool calls, the system creates a `ContentToolResult` with an error message to maintain protocol compliance. Interrupted content is saved to chat history so the model sees partial responses in future requests.
