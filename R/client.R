@@ -1,7 +1,7 @@
 predictive_client <- function(
   chat = getOption(
     "predictive.chat",
-    default = chat_google_gemini(model = "gemini-2.5-pro")
+    default = chat_anthropic(model = "claude-sonnet-4-20250514")
   ),
   default_turns = list()
 ) {
