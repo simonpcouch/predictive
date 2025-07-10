@@ -28,10 +28,10 @@ run_experiment <- function(
     purpose = purpose,
     synchronous = synchronous
   )
-
+  currently_loaded <- names(sessionInfo()$otherPkgs)
   m <- mirai::mirai(
     {
-      suppressPackageStartupMessages(library(tidymodels))
+      load_required_packages(currently_loaded)
 
       preprocessor <- eval(parse(text = recipe))
       spec <- eval(parse(text = model))
@@ -78,7 +78,16 @@ run_experiment <- function(
 
       list(metrics = metrics)
     },
-    list2env(as.list(environment()), global_env())
+    list2env(
+      c(
+        as.list(environment()),
+        list(
+          load_required_packages = load_required_packages,
+          currently_loaded = currently_loaded
+        )
+      ),
+      global_env()
+    )
   )
 
   promises::then(
@@ -240,6 +249,25 @@ concatenate_directory <- function(dir) {
     ),
     collapse = "\n"
   )
+}
+
+load_required_packages <- function(
+  currently_loaded = names(sessionInfo()$otherPkgs)
+) {
+  loaded_packages <- c(
+    "tidymodels",
+    parsnip:::extensions(),
+    setdiff(
+      currently_loaded,
+      c(tidymodels::tidymodels_packages(), "predictive")
+    )
+  )
+
+  for (pkg in loaded_packages) {
+    suppressPackageStartupMessages(
+      library(pkg, character.only = TRUE, quietly = TRUE)
+    )
+  }
 }
 
 tool_run_experiment <-
