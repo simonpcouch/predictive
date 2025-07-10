@@ -58,3 +58,18 @@ Future AI assistants working on ExtendedTask issues should read:
 2. **mirai-promises integration**: https://mirai.r-lib.org/articles/mirai-promises.html#shiny-extendedtask-introduction
    - How mirai provides event-driven promises
    - Patterns for ExtendedTask with mirai
+
+## Experiment Notification System
+
+The app includes a "Notify with new results" button above the chat input when there are completed async experiments that haven't been seen by the model yet.
+
+Key implementation details:
+- Button appears when `new_async_experiments()` returns non-empty list
+- Uses `notification_clicked` reactive value to track button state for immediate visual feedback
+- Uses `notification_state_hash` to detect actual changes and prevent flickering from frequent timer invalidations
+- Click handler sets `notification_clicked(TRUE)` immediately, then calls `start_chat_request()` which handles notification display
+
+Problems to watch for:
+- Flickering without proper state hash tracking
+- Timing issues if experiments are marked as seen before `start_chat_request()` captures them
+- Button persistence without proper click state tracking
