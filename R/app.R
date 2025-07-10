@@ -45,7 +45,18 @@ predictive <- function(new_session = FALSE) {
     html_deps(),
     layout_columns(
       col_widths = c(7, 5),
-      chat_ui("chat", fill = TRUE, height = "100%"),
+      div(
+        style = "height: 100%; display: flex; flex-direction: column;",
+        div(
+          style = "flex: 1; min-height: 0;",
+          chat_ui("chat", fill = TRUE, height = "100%")
+        ),
+        div(
+          id = "notification-area",
+          style = "padding: 4px 12px; margin-bottom: 4px;",
+          uiOutput("experiment_notification")
+        )
+      ),
       card(
         card_header("Experiments"),
         div(
@@ -185,6 +196,7 @@ predictive <- function(new_session = FALSE) {
       style = "text-align: center; color: #666; margin-top: 20px;",
       "No experiments yet."
     ))
+    notification_trigger <- reactiveVal(0)
 
     experiment_timer <- reactive({
       if (length(running_experiments()) > 0) {
@@ -224,6 +236,35 @@ predictive <- function(new_session = FALSE) {
 
     output$experiment_cards <- renderUI({
       experiment_cards_reactive()
+    })
+
+    # Reactive for experiment notification button
+    output$experiment_notification <- renderUI({
+      experiment_timer()
+      notification_trigger()
+      
+      new_exp_names <- new_async_experiments()
+      if (length(new_exp_names) > 0) {
+        button_text <- cli::format_inline("Notify with new results {glue::backtick(new_exp_names)}")
+        
+        actionButton(
+          "notify_new_results",
+          button_text,
+          class = "btn-outline-primary",
+          style = "font-size: 11px; padding: 4px 8px; border-radius: 12px; background-color: white; border: 1px solid #6c9bd1; width: 100%; text-align: left; color: #6c9bd1;"
+        )
+      } else {
+        NULL
+      }
+    })
+
+    observeEvent(input$notify_new_results, {
+      new_async_exp_names <- new_async_experiments()
+      for (name in new_async_exp_names) {
+        the$experiments[[name]]$seen_by_model <- TRUE
+      }
+      notification_trigger(notification_trigger() + 1)
+      start_chat_request("Please review the new experiment results.")
     })
 
     # Debounced card click handler
