@@ -197,6 +197,7 @@ predictive <- function(new_session = FALSE) {
       "No experiments yet."
     ))
     notification_trigger <- reactiveVal(0)
+    notification_clicked <- reactiveVal(FALSE)
 
     experiment_timer <- reactive({
       if (length(running_experiments()) > 0) {
@@ -239,19 +240,49 @@ predictive <- function(new_session = FALSE) {
     })
 
     # Reactive for experiment notification button
-    output$experiment_notification <- renderUI({
+    notification_state_hash <- reactiveVal("")
+
+    observe({
       experiment_timer()
-      notification_trigger()
-      
+
       new_exp_names <- new_async_experiments()
-      if (length(new_exp_names) > 0) {
-        button_text <- cli::format_inline("Notify with new results {glue::backtick(new_exp_names)}")
-        
+      current_hash <- rlang::hash(new_exp_names)
+
+      if (!identical(current_hash, notification_state_hash())) {
+        notification_state_hash(current_hash)
+        notification_clicked(FALSE)
+        notification_trigger(notification_trigger() + 1)
+      }
+    })
+
+    output$experiment_notification <- renderUI({
+      notification_trigger()
+
+      new_exp_names <- new_async_experiments()
+      clicked <- notification_clicked()
+
+      if (length(new_exp_names) > 0 && !clicked) {
+        button_text <- cli::format_inline(
+          "Notify with new results {glue::backtick(new_exp_names)}"
+        )
+
         actionButton(
           "notify_new_results",
           button_text,
           class = "btn-outline-primary",
           style = "font-size: 11px; padding: 4px 8px; border-radius: 12px; background-color: white; border: 1px solid #6c9bd1; width: 100%; text-align: left; color: #6c9bd1;"
+        )
+      } else if (length(new_exp_names) > 0 && clicked) {
+        button_text <- cli::format_inline(
+          "Notify with new results {glue::backtick(new_exp_names)}"
+        )
+
+        actionButton(
+          "notify_new_results_disabled",
+          button_text,
+          class = "btn-outline-secondary",
+          style = "font-size: 11px; padding: 4px 8px; border-radius: 12px; background-color: #f8f9fa; border: 1px solid #dee2e6; width: 100%; text-align: left; color: #6c757d; cursor: not-allowed;",
+          disabled = TRUE
         )
       } else {
         NULL
@@ -259,11 +290,7 @@ predictive <- function(new_session = FALSE) {
     })
 
     observeEvent(input$notify_new_results, {
-      new_async_exp_names <- new_async_experiments()
-      for (name in new_async_exp_names) {
-        the$experiments[[name]]$seen_by_model <- TRUE
-      }
-      notification_trigger(notification_trigger() + 1)
+      notification_clicked(TRUE)
       start_chat_request("Please review the new experiment results.")
     })
 
