@@ -11,9 +11,9 @@ html_deps <- function() {
       utils::packageVersion("predictive"),
       src = "www",
       package = "predictive",
-      stylesheet = "style.css"
+      stylesheet = "style.css",
+      script = "chat-controls.js"
     ),
-    # Tool calling UI dependencies from shinychat
     htmltools::htmlDependency(
       "shinychat-tools",
       utils::packageVersion("shinychat"),
@@ -49,7 +49,10 @@ predictive <- function(new_session = FALSE) {
         style = "height: 100%; display: flex; flex-direction: column;",
         div(
           style = "flex: 1; min-height: 0;",
-          chat_ui("chat", fill = TRUE, height = "100%")
+          div(
+            class = "chat-input-container",
+            chat_ui("chat", fill = TRUE, height = "100%")
+          )
         ),
         div(
           id = "notification-area",
@@ -297,11 +300,18 @@ predictive <- function(new_session = FALSE) {
 
     output$stream_interrupt_button <- renderUI({
       if (chat_stream_task$status() == "running") {
-        actionButton(
-          "interrupt_stream",
-          "Stop",
-          class = "btn-outline-danger",
-          style = "font-size: 11px; padding: 4px 12px; border-radius: 12px; background-color: white; border: 1px solid #dc3545; color: #dc3545; margin-top: 4px;"
+        pause_icon <- '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+          <path d="M5.5 3.5A1.5 1.5 0 0 1 7 2h2a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 9 14H7a1.5 1.5 0 0 1-1.5-1.5v-9Z"/>
+        </svg>'
+        
+        tags$button(
+          id = "interrupt_stream",
+          class = "enhanced-stop-button",
+          type = "button",
+          title = "Stop streaming",
+          `aria-label` = "Stop streaming",
+          onclick = "Shiny.setInputValue('interrupt_stream', Math.random(), {priority: 'event'});",
+          HTML(pause_icon)
         )
       } else {
         NULL
