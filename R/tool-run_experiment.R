@@ -172,6 +172,15 @@ run_experiment_safely <- function(
   purpose,
   synchronous = FALSE
 ) {
+  if (name %in% names(the$experiments)) {
+    ellmer::ContentToolResult(
+      value = NULL,
+      error = glue::glue(
+        "`name` '{name}' is the name of an experiment that exists already. ",
+        "Please choose a unique name."
+      )
+    )
+  }
   tryCatch(
     {
       run_experiment(
