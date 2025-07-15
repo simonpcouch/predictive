@@ -429,6 +429,9 @@ predictive <- function(new_session = FALSE) {
     }
 
     observeEvent(input$chat_user_input, {
+      if (length(new_async_experiments()) > 0) {
+        notification_clicked(TRUE)
+      }
       start_chat_request(input$chat_user_input)
     })
 
