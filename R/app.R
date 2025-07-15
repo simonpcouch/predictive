@@ -27,7 +27,17 @@ html_deps <- function() {
 
 latest_session <- reactiveVal()
 
-#' Runs predictive
+#' Frontend for tidy modeling
+#'
+#' @description
+#' predictive is an agentic frontend for predictive modeling with tidymodels.
+#' The chat application will guide you through the exploratory data analysis
+#' and model development process, running R code and launching modeling
+#' experiments on your behalf.
+#'
+#' @seealso
+#' The introductory vignette `vignette("predictive", package = "predictive")`
+#' contains more information on the workflow and design of this application.
 #'
 #' @param new_session Logical. If `TRUE`, starts a new chat session. If `FALSE`
 #'   (the default), restores the previous chat session (only within the current

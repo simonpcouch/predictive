@@ -24,3 +24,6 @@ vignettes/*.pdf
 *~
 .Rdata
 .quarto
+inst/doc
+/doc/
+/Meta/

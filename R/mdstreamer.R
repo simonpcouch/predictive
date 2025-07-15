@@ -1,9 +1,9 @@
 MarkdownStreamer <- R6::R6Class(
   "MarkdownStreamer",
   public = list(
-    #' @description
-    #' Create a new MarkdownStreamer object
-    #' @param callback Function to process Markdown output, takes a single markdown argument
+    # @description
+    # Create a new MarkdownStreamer object
+    # @param callback Function to process Markdown output, takes a single markdown argument
     initialize = function(callback) {
       if (!is.function(callback)) {
         abort("`callback` must be a function")
@@ -17,11 +17,11 @@ MarkdownStreamer <- R6::R6Class(
       private$empty <- TRUE
     },
 
-    #' @description
-    #' Process text as regular Markdown
-    #' @param text Text to be processed as Markdown, can be a character vector
-    #' @param ensure_newline_before Ensure text starts with a newline
-    #' @param ensure_newline_after Ensure text ends with a newline
+    # @description
+    # Process text as regular Markdown
+    # @param text Text to be processed as Markdown, can be a character vector
+    # @param ensure_newline_before Ensure text starts with a newline
+    # @param ensure_newline_after Ensure text ends with a newline
     md = function(
       text,
       ensure_newline_before = FALSE,
@@ -53,11 +53,11 @@ MarkdownStreamer <- R6::R6Class(
       invisible(self)
     },
 
-    #' @description
-    #' Process text as code block
-    #' @param text Text to be formatted as a code block, can be a character vector
-    #' @param ensure_newline_before Ensure a newline before the code block
-    #' @param ensure_newline_after Ensure a newline after the code block
+    # @description
+    # Process text as code block
+    # @param text Text to be formatted as a code block, can be a character vector
+    # @param ensure_newline_before Ensure a newline before the code block
+    # @param ensure_newline_after Ensure a newline after the code block
     code = function(
       text,
       ensure_newline_before = FALSE,
@@ -99,8 +99,8 @@ MarkdownStreamer <- R6::R6Class(
       invisible(self)
     },
 
-    #' @description
-    #' Close any open code blocks
+    # @description
+    # Close any open code blocks
     close = function() {
       if (private$in_code_block) {
         private$close_code_block()
@@ -115,11 +115,11 @@ MarkdownStreamer <- R6::R6Class(
     last_ends_with_newline = TRUE,
     empty = TRUE,
 
-    #' @description
-    #' Send text to the callback and update state
-    #' @param text Text to send
-    #' @param ensure_newline_before Ensure text starts with a newline
-    #' @param ensure_newline_after Ensure text ends with a newline
+    # @description
+    # Send text to the callback and update state
+    # @param text Text to send
+    # @param ensure_newline_before Ensure text starts with a newline
+    # @param ensure_newline_after Ensure text ends with a newline
     send = function(
       text,
       ensure_newline_before = FALSE,
@@ -153,8 +153,8 @@ MarkdownStreamer <- R6::R6Class(
       }
     },
 
-    #' @description
-    #' Close a code block with proper formatting
+    # @description
+    # Close a code block with proper formatting
     close_code_block = function() {
       private$send("```\n", TRUE, FALSE)
       private$in_code_block <- FALSE
@@ -171,7 +171,6 @@ NullStreamer <- R6::R6Class(
     code = function(text, ...) {
       invisible(self)
     },
-    close = function() {
-    }
+    close = function() {}
   )
 )

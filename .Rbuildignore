@@ -19,3 +19,5 @@ inst/sandbox
 CLAUDE.md
 ^[\.]?air\.toml$
 ^\.vscode$
+^doc$
+^Meta$
