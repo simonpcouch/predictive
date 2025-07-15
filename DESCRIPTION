@@ -23,7 +23,7 @@ Imports:
     R6,
     rlang,
     S7,
-    shiny (>= 1.10.0),
+    shiny (>= 1.11.1),
     shinychat,
     styler,
     tibble,
@@ -32,7 +32,9 @@ Imports:
     whisker,
     withr
 Remotes:
-    posit-dev/shinychat#52
+    posit-dev/shinychat#52,
+    r-lib/httr2@v1.1.2,
+    tidyverse/ellmer@v0.2.1
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
