@@ -1,13 +1,13 @@
 # A frontend for predictive modeling with tidymodels
 
-predictive is a fork of [databot](https://github.com/jcheng5/databot) focused on predictive modeling. Modeling with tidymodels is a bit different than EDA in two important ways:
+predictive is an agentic frontend for predictive modeling with tidymodels. It's a fork of [databot](https://github.com/jcheng5/databot), an exploratory data analysis agent, with two important modifications:
 
-* Models don't "just know" tidymodels in the way that they tend to for base R and the tidyverse, requiring more extensive prompting.
+* Ensuring models have the right "stance"—not touched the testing data prematurely and repeating experiments with shared resampled metrics—requires substantial prompting and tooling.
 * It is typical for modeling code to take a long time to run, requiring asynchronous execution and new UI.
 
-predictive is an experiment in revisiting databot with these two considerations in mind.
+After walking you through data splitting, resampling, and EDA, predictive will collaborate with you to launch modeling experiments that iteratively drive down error rates.
 
-<img src="inst/demo.gif" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);" alt="Demo of predictive.">
+![Demo of predictive.](https://github.com/user-attachments/assets/b16de421-e984-481b-a957-eb85cb8d6c93)
 
 ## Installation
 
