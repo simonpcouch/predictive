@@ -14,7 +14,8 @@ test_that("run_experiment returns ContentToolResult with expected structure", {
     recipe = "recipes::recipe(mpg ~ ., data = mtcars)",
     model = "parsnip::null_model() %>% parsnip::set_engine('parsnip') %>% parsnip::set_mode('regression')",
     resampling_fn = "fit_resamples",
-    name = "null_model_test"
+    name = "null_model_test",
+    purpose = "test"
   )
 
   expect_s3_class(result, "ellmer::ContentToolResult")
@@ -48,7 +49,8 @@ test_that("run_experiment_safely handles errors gracefully", {
     recipe = "invalid_recipe",
     model = "parsnip::null_model()",
     resampling_fn = "fit_resamples",
-    name = "error_test"
+    name = "error_test",
+    purpose = "test"
   )
 
   expect_s3_class(result, "ellmer::ContentToolResult")
@@ -64,7 +66,8 @@ test_that("run_experiment validates resampling_fn argument", {
       recipe = "recipe(mpg ~ ., data = mtcars)",
       model = "null_model()",
       resampling_fn = "invalid_function",
-      name = "test_exp"
+      name = "test_exp",
+      purpose = "test"
     )
   )
 })

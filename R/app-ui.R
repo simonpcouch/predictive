@@ -2,9 +2,17 @@ card_render_experiment <- function(name, exp) {
   status_icon <- if (exp$status == "running") {
     tags$i(class = "fa fa-spinner fa-spin", style = "color: #6c757d;")
   } else if (!is.null(exp$error)) {
-    HTML("<span style=\"color: #dc3545;\">✖</span>")
+    HTML(paste0(
+      "<span style=\"color: #dc3545;\">",
+      cli::symbol$cross,
+      "</span>"
+    ))
   } else {
-    HTML("<span style=\"color: #28a745;\">✔</span>")
+    HTML(paste0(
+      "<span style=\"color: #28a745;\">",
+      cli::symbol$tick,
+      "</span>"
+    ))
   }
 
   duration <- card_duration(exp)
@@ -149,7 +157,7 @@ card_metrics_display <- function(experiment) {
         "RMSE: ",
         round(min_rmse, 3),
         "\n\n",
-        "R²: ",
+        "R\u00B2: ",
         round(corresponding_rsq, 3),
         collapse = ""
       )
