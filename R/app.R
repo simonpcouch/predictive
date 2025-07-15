@@ -424,7 +424,23 @@ predictive <- function(new_session = FALSE) {
         )
       }
 
-      full_input <- paste0(prefix, user_input, experiment_results)
+      suggestion_content <- if (length(the$experiments) > 5) {
+        selected_suggestion <- sample(suggestions, 1)
+        paste0(
+          "\n<suggestion_from_application>",
+          selected_suggestion,
+          "</suggestion_from_application>"
+        )
+      } else {
+        ""
+      }
+
+      full_input <- paste0(
+        prefix,
+        user_input,
+        suggestion_content,
+        experiment_results
+      )
       chat_stream_task$invoke(chat, full_input, user_input)
     }
 
