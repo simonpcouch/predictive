@@ -36,9 +36,11 @@ Remotes:
     r-lib/httr2@v1.1.2,
     tidyverse/ellmer@v0.2.1
 Suggests:
+    rmarkdown,
     testthat (>= 3.0.0),
     tidyverse
 Config/testthat/edition: 3
 License: MIT + file LICENSE
 URL: https://github.com/simonpcouch/predictive
 BugReports: https://github.com/simonpcouch/predictive/issues
+VignetteBuilder: knitr

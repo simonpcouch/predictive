@@ -1,0 +1,86 @@
+---
+title: "Getting started with predictive"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with predictive}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+predictive is an agentic frontend for predictive modeling with tidymodels. The chat application will guide you through the exploratory data analysis and model development process, running R code and launching modeling experiments on your behalf.
+
+To get started with predictive, just run `predictive::predictive()`, and the model should be able to guide you through the process from there. If you'd like to better understand that process and how the app works, read on.
+
+## Workflow
+
+The workflow of predictive model development with tidymodels looks something like this:
+
+```{r, out.width="100%"}
+#| echo: false
+#| fig-alt: "A machine learning workflow diagram showing data processing and model selection steps. The process begins with 'All data' splitting into 'Training' and 'Testing' sets, where the training data goes through 'Resamples' before being fed into three competing models: 'Log Reg' (logistic regression), 'Decision Tree,' and 'Random Forest.' These models are evaluated through a 'Select a Model' step, which determines the 'Final Model Fit' using the testing data."
+knitr::include_graphics("https://workshops.tidymodels.org/slides/images/whole-game-final-performance.jpg")
+```
+
+* **Splitting**: Split the data into training and testing sets, the former of which will be used to develop the model while the latter will be used to get a good estimate for how the model will perform with unseen data.
+* **Resampling**: Split the training data into smaller subsets which can be used to evaluate various models and preprocessors.
+* **Try stuff**: Iteratively try out various feature engineering and modeling approaches and see what works. Generate hypotheses about the underlying structure of the data you're trying to model and introduce changes to account for that structure.
+* **Select and fit a model**: Based on your experiments, choose the best model and fit it to the entire training set.
+* **Evaluate the model**: Generate predictions on the testing set with your new model and measure how well it did.
+
+The original databot implementation, with a little prompting, does great at all of the steps above besides **Try stuff**. In that case, there are two issues:
+
+* **Model development is iterative.** In much of LLM's training data, model development looks like running an off-the-shelf hyperparameter optimization function. In real life, model development requires trying things, learning from the outputs, and coming up with new things to try in an iterative loop. Teaching an LLM to really dig in to this model development process requires careful prompting and tools.
+* **Model fitting code can take a while to run.** In databot, once the LLM chooses to run any model fitting code, it's hard to tell what's going on; the user just has to wait for the code to finish running. 
+
+predictive provides prompts, tools, and UI to aid models in the model development process.
+
+## Asychronous evaluation
+
+Aside from databot's `run_r_code()`, the other main tool in predictive's belt is `run_experiment()`. `run_experiment()` takes a recipe, model, and resampling function, and outputs performance metrics for the experiment and a number of side effects in the app's UI. For example, a model might choose to run an experiment with these inputs:
+
+```r
+run_experiment(
+  recipe = "recipe(mpg ~ ., mtcars)",
+  model = "linear_reg()",
+  resampling_fn = "fit_resamples"
+)
+```
+
+Under the hood, the tool would then create a clickable experiment card that allows the user to track the experiment's progress and run R code that looks something like:
+
+```r
+fit_resamples(
+  linear_reg(),
+  recipe(mpg ~ ., mtcars),
+  vfold_cv(mtcars)
+)
+```
+
+However, the tool does not run the above R code in the R process that the chat is happening in, like it would if instead the code was run in databot's `run_r_code()`. Instead, `run_experiment()` launches a [mirai](https://mirai.r-lib.org/articles/mirai.html) worker that actually runs the experiment. So, instead of waiting for the experiment to finish and blocking further progress in the meantime, **the tool responds immediately** with something like "Got it—the experiment is running. You'll be notified when it's finished." Once it returns, the LLM is free to continue launching other experiments, doing some more EDA, or answering other user questions. Every time a user turn is submitted (that's either you, as a user, typing something into the chatbox or ellmer responding to a tool request on your behalf), predictive checks whether there are any new experiment results that have yet to be seen by the LLM. In that case, the experimental results will be inlined into that turn so that the LLM can learn from its experiments and propose new directions. 
+
+## Context
+
+There's a lot of context about tidymodels inlined into predictive's prompt, as well as a number of tools that allow the LLM to peruse tidymodels package documentation for additional context.
+
+The model's system prompt contains a variety of directives and information sources that allow it to drive the model development workflow.
+
+The main portion of the system prompt describes how to guide users through the model development process. It looks a lot like I wrote above in "Workflow section"—split data, resample it, try stuff, don't touch the testing data until you know you're done.
+
+The description for the `run_experiment()` tool contains a _lot_ of context on tidymodels and what's possible with it. For one, both the `model` and `recipe` arguments contain highly-abbreviated documentation for every model type and recipe step in the framework. For example, here's what the documentation for `linear_reg()` looks like:
+
+```{r, comment = "", echo = FALSE}
+cat(readLines(
+  system.file("context/models/linear_reg.md", package = "predictive")
+), sep = "\n")
+```
+
+Each of these documentation entries are written by LLMs using the full tidymodels documentation entries as ground truth. These shorter entries are designed to use as few tokens as possible while also allowing the model to make use of all of the modeling engines available in tidymodels. Still, altogether, these abbreviated documentation entries make up over 10,000 tokens and make up the majority of the tokens used by predictive.
+
+That said, in the case that that context is not enough, the LLM has a number of [tools provided by the btw package](https://posit-dev.github.io/btw/reference/btw_tools.html) that allow it to peruse R package documentation. By reading help-pages and vignettes from across the tidymodels packages, the LLM can read up on whatever it needs to to respond to your requests.
