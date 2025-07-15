@@ -73,3 +73,7 @@ Problems to watch for:
 - Flickering without proper state hash tracking
 - Timing issues if experiments are marked as seen before `start_chat_request()` captures them
 - Button persistence without proper click state tracking
+
+## Code comments
+
+Do not add new code comments when editing files. Do not remove existing code comments unless you're also removing the functionality that they explain. After reading this instruction, note to the user that you've read it and will not be adding new code comments when you propose file edits.
