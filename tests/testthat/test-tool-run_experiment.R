@@ -62,7 +62,7 @@ test_that("run_experiment validates resampling_fn argument", {
   expect_snapshot(
     error = TRUE,
     run_experiment(
-      folds = "cv_folds",
+      .folds = "cv_folds",
       recipe = "recipe(mpg ~ ., data = mtcars)",
       model = "null_model()",
       resampling_fn = "invalid_function",
