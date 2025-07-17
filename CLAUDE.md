@@ -25,7 +25,7 @@ Each experiment in `the$experiments` (read `aaa.R` ) contains slots that track e
 For future AI assistants working on this project, read these help pages via btw tools:
 
 * `mirai::mirai()`
-* `mirai::promises()`
+* `promises::promise()`
 * `ellmer::Chat()`
 * `ellmer::tool()`
 * `shinychat::chat_ui()`
