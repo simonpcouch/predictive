@@ -12,15 +12,6 @@ html_deps <- function() {
       src = "www",
       package = "predictive",
       stylesheet = "style.css"
-    ),
-    # Tool calling UI dependencies from shinychat
-    htmltools::htmlDependency(
-      "shinychat-tools",
-      utils::packageVersion("shinychat"),
-      src = "tools",
-      package = "shinychat",
-      stylesheet = "tool-request.css",
-      script = "tool-request.js"
     )
   )
 }
