@@ -43,7 +43,8 @@ Imports:
     whisker,
     withr
 Remotes:
-    posit-dev/shinychat#52,
+    posit-dev/btw,
+    posit-dev/shinychat/pkg-r#52,
     r-lib/httr2@v1.1.2,
     tidyverse/ellmer@v0.2.1
 Suggests:
