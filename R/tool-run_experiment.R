@@ -104,9 +104,14 @@ run_experiment <- function(
     }
   )
 
+  if (in_vitals_eval()) {
+    synchronous <- TRUE
+  }
+
   if (synchronous) {
     res <- mirai::collect_mirai(m)
     if (mirai::is_error_value(res)) {
+      cat_on_eval("- Experiment {name} completed with error {res}.")
       return(ellmer::ContentToolResult(
         error = res,
         extra = list(
@@ -121,6 +126,7 @@ run_experiment <- function(
         )
       ))
     }
+    cat_on_eval("- Experiment {name} finished successfully.")
     return(ellmer::ContentToolResult(
       value = btw::btw_this(res$metrics),
       extra = list(
@@ -172,6 +178,7 @@ run_experiment_safely <- function(
   purpose,
   synchronous = FALSE
 ) {
+  cat_on_eval("\n\nRunning experiment {name}.")
   if (name %in% names(the$experiments)) {
     ellmer::ContentToolResult(
       value = NULL,
@@ -195,6 +202,7 @@ run_experiment_safely <- function(
     },
     error = function(e) {
       error_msg <- conditionMessage(e)
+      cat_on_eval("- Experiment failed with '{error_msg}'.")
       if (exists(".Last.tune.result")) {
         # TODO: this may not actually be surfacing the right information
         # if an experiment failed but did so outside of a tuning process
@@ -273,8 +281,11 @@ load_required_packages <- function(
   )
 
   for (pkg in loaded_packages) {
-    suppressPackageStartupMessages(
-      library(pkg, character.only = TRUE, quietly = TRUE)
+    tryCatch(
+      suppressPackageStartupMessages(
+        library(pkg, character.only = TRUE, quietly = TRUE)
+      ),
+      error = function(e) {}
     )
   }
 }
