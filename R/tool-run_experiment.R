@@ -280,8 +280,11 @@ load_required_packages <- function(
   )
 
   for (pkg in loaded_packages) {
-    suppressPackageStartupMessages(
-      library(pkg, character.only = TRUE, quietly = TRUE)
+    tryCatch(
+      suppressPackageStartupMessages(
+        library(pkg, character.only = TRUE, quietly = TRUE)
+      ),
+      error = function(e) {}
     )
   }
 }
