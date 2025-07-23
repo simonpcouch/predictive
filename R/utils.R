@@ -140,7 +140,7 @@ in_vitals_eval <- function() {
 
 cat_on_eval <- function(x, env = rlang::caller_env()) {
   if (in_vitals_eval()) {
-    cat(cli::format_inline(x, .envir = env))
+    cli::cat_line(cli::format_inline(x, .envir = env))
   }
   invisible()
 }

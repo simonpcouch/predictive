@@ -111,6 +111,7 @@ run_experiment <- function(
   if (synchronous) {
     res <- mirai::collect_mirai(m)
     if (mirai::is_error_value(res)) {
+      cat_on_eval("- Experiment {name} completed with error {res}.")
       return(ellmer::ContentToolResult(
         error = res,
         extra = list(
@@ -125,7 +126,7 @@ run_experiment <- function(
         )
       ))
     }
-    cat_on_eval("- Experiment {name} finished.")
+    cat_on_eval("- Experiment {name} finished successfully.")
     return(ellmer::ContentToolResult(
       value = btw::btw_this(res$metrics),
       extra = list(
@@ -177,7 +178,7 @@ run_experiment_safely <- function(
   purpose,
   synchronous = FALSE
 ) {
-  cat_on_eval("Running experiment {name}.")
+  cat_on_eval("\n\nRunning experiment {name}.")
   if (name %in% names(the$experiments)) {
     ellmer::ContentToolResult(
       value = NULL,
