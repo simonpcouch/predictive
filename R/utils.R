@@ -133,3 +133,14 @@ rule <- function(...) {
   width <- getOption("width") - nchar(text) - 3
   paste0("- ", text, " ", strrep("-", width))
 }
+
+in_vitals_eval <- function() {
+  !identical(Sys.getenv("IN_VITALS_EVAL"), "")
+}
+
+cat_on_eval <- function(x, env = rlang::caller_env()) {
+  if (in_vitals_eval()) {
+    cat(cli::format_inline(x, .envir = env))
+  }
+  invisible()
+}
