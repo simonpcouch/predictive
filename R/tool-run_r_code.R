@@ -120,5 +120,5 @@ tool_run_r_code <-
   tool(
     run_r_code,
     "Executes R code in the current session",
-    code = type_string("R code to execute")
+    arguments = list(code = type_string("R code to execute"))
   )
