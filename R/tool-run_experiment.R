@@ -286,47 +286,49 @@ tool_run_experiment <-
      _only_ mechanism by which the assistant actually fits models.
      Be sure to namespace any functions you use from tidymodels in the recipe
      and model specifications.",
-    folds = type_string("The name of the resamples object."),
-    recipe = type_string(paste0(
-      c(
-        readLines(system.file("prompts/recipe.md", package = "predictive")),
-        concatenate_directory("steps")
-      ),
-      collapse = "\n"
-    )),
-    model = type_string(paste0(
-      c(
-        readLines(system.file("prompts/model.md", package = "predictive")),
-        concatenate_directory("models")
-      ),
-      collapse = "\n"
-    )),
-    resampling_fn = type_string(paste0(
-      c(
-        cli::format_inline("One of {.or resampling_fns}."),
-        "When there are no parameters to tune, use fit_resamples.",
-        "When there are parameters to tune, tune_race_anova is usually your best
+    arguments = list(
+      folds = type_string("The name of the resamples object."),
+      recipe = type_string(paste0(
+        c(
+          readLines(system.file("prompts/recipe.md", package = "predictive")),
+          concatenate_directory("steps")
+        ),
+        collapse = "\n"
+      )),
+      model = type_string(paste0(
+        c(
+          readLines(system.file("prompts/model.md", package = "predictive")),
+          concatenate_directory("models")
+        ),
+        collapse = "\n"
+      )),
+      resampling_fn = type_string(paste0(
+        c(
+          cli::format_inline("One of {.or resampling_fns}."),
+          "When there are no parameters to tune, use fit_resamples.",
+          "When there are parameters to tune, tune_race_anova is usually your best
        bet, as it is a more performant version of tune_grid.",
-        "Do not include parantheses after the function name."
+          "Do not include parantheses after the function name."
+        ),
+        collapse = "\n"
+      )),
+      name = type_string(
+        "A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."
       ),
-      collapse = "\n"
-    )),
-    name = type_string(
-      "A unique name for the experiment, composed only of alphanumerics and underscores. The name should be less than 20 characters and, if possible, describe the model/recipe/resampling_fn. e.g. linear_reg_pca_race."
-    ),
-    purpose = type_string(
-      "A 5-word-or-less description of what's being newly explored in the experiment. This will be shown to the user alongside the name; using words that aren't redundant with the name is preferred."
-    ),
-    synchronous = type_boolean(paste0(
-      c(
-        "Whether the experiment should be run synchronously or not.",
-        "The first experiments, with a null model and baseline fit, should ",
-        "likely be run synchronously. Experiments after the first two should likely ",
-        "be run asynchronously so you can run multiple at a time without freezing ",
-        "the user's interface. Defaults to false, as in asynchronous."
+      purpose = type_string(
+        "A 5-word-or-less description of what's being newly explored in the experiment. This will be shown to the user alongside the name; using words that aren't redundant with the name is preferred."
       ),
-      collapse = ""
-    )),
-    .convert = FALSE,
-    .name = "run_experiment"
+      synchronous = type_boolean(paste0(
+        c(
+          "Whether the experiment should be run synchronously or not.",
+          "The first experiments, with a null model and baseline fit, should ",
+          "likely be run synchronously. Experiments after the first two should likely ",
+          "be run asynchronously so you can run multiple at a time without freezing ",
+          "the user's interface. Defaults to false, as in asynchronous."
+        ),
+        collapse = ""
+      ))
+    ),
+    convert = FALSE,
+    name = "run_experiment"
   )

@@ -456,16 +456,18 @@ predictive <- function(new_session = FALSE) {
       chat_stream_task$status(),
       {
         if (chat_stream_task$status() == "success") {
-          tokens <- chat$get_tokens(include_system_prompt = FALSE)
-          input <- sum(tokens$tokens[tokens$role == "user"])
-          output <- sum(tokens$tokens[tokens$role == "assistant"])
+          # TODO: there's an issue with turns having a 2-length @token
+          # slot rather than 3, causing `get_tokens()` to error out
+          # tokens <- chat$get_tokens(include_system_prompt = FALSE)
+          # input <- sum(tokens$tokens[tokens$role == "user"])
+          # output <- sum(tokens$tokens[tokens$role == "assistant"])
 
-          cat("\n")
-          cat(rule("Turn ", nrow(tokens) / 2), "\n", sep = "")
-          cat("Total input tokens:  ", input, "\n", sep = "")
-          cat("Total output tokens: ", output, "\n", sep = "")
-          cat("Total tokens:        ", input + output, "\n", sep = "")
-          cat("\n")
+          # cat("\n")
+          # cat(rule("Turn ", nrow(tokens) / 2), "\n", sep = "")
+          # cat("Total input tokens:  ", input, "\n", sep = "")
+          # cat("Total output tokens: ", output, "\n", sep = "")
+          # cat("Total tokens:        ", input + output, "\n", sep = "")
+          # cat("\n")
           .last_chat <<- chat
 
           globals$turns <- chat$get_turns()
