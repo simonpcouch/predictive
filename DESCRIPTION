@@ -1,6 +1,6 @@
 Package: predictive
 Title: Frontend For Predictive Modeling With 'tidymodels'
-Version: 0.0.0.0009
+Version: 0.0.0.9000
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre")),
     person("Joe", "Cheng", , "joe@posit.co", role = "aut")
@@ -16,7 +16,7 @@ Imports:
     btw,
     cli,
     coro,
-    ellmer,
+    ellmer (>= 0.2.1.9000),
     evaluate,
     glue,
     here,
@@ -43,10 +43,8 @@ Imports:
     whisker,
     withr
 Remotes:
-    posit-dev/btw,
-    posit-dev/shinychat/pkg-r#52,
-    r-lib/httr2@v1.1.2,
-    tidyverse/ellmer@v0.2.1
+    posit-dev/btw#79,
+    posit-dev/shinychat/pkg-r#52
 Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
