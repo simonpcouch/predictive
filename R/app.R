@@ -412,15 +412,13 @@ predictive <- function(new_session = FALSE) {
       }
 
       if (length(new_async_exp_names) > 0) {
-        notification_html <- sprintf(
-          '<p class="shiny-experiment-notification">%s</p>',
-          cli::format_inline(
-            "Notified with experiment results {new_async_exp_names}."
-          )
+        notification_content <- sprintf(
+          '<div><p class="shiny-experiment-notification">%s</p></div>',
+          cli::format_inline("Notified with experiment results {new_async_exp_names}.")
         )
         chat_append_message(
           "chat",
-          list(role = "assistant", content = HTML(notification_html)),
+          list(role = "assistant", content = notification_content),
           chunk = FALSE
         )
       }
