@@ -43,8 +43,8 @@ Imports:
     whisker,
     withr
 Remotes:
-    posit-dev/btw#79,
-    posit-dev/shinychat/pkg-r#52
+    posit-dev/btw,
+    posit-dev/shinychat/pkg-r
 Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
