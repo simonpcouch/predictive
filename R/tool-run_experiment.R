@@ -253,21 +253,6 @@ mock_script <- function(recipe, model, resampling_fn, folds) {
   )
 }
 
-concatenate_directory <- function(dir) {
-  files <- list.files(
-    system.file(paste0("context/", dir), package = "predictive"),
-    full.names = TRUE
-  )
-  paste0(
-    purrr::map_chr(
-      files,
-      ~ paste0(readLines(.x), collapse = "\n"),
-      warn = FALSE
-    ),
-    collapse = "\n"
-  )
-}
-
 load_required_packages <- function(
   currently_loaded = names(sessionInfo()$otherPkgs)
 ) {
@@ -301,15 +286,13 @@ tool_run_experiment <-
       folds = type_string("The name of the resamples object."),
       recipe = type_string(paste0(
         c(
-          readLines(system.file("prompts/recipe.md", package = "predictive")),
-          concatenate_directory("steps")
+          readLines(system.file("prompts/recipe.md", package = "predictive"))
         ),
         collapse = "\n"
       )),
       model = type_string(paste0(
         c(
-          readLines(system.file("prompts/model.md", package = "predictive")),
-          concatenate_directory("models")
+          readLines(system.file("prompts/model.md", package = "predictive"))
         ),
         collapse = "\n"
       )),
