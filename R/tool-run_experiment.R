@@ -21,6 +21,7 @@ run_experiment <- function(
     status = "running",
     script = script,
     metrics = NULL,
+    workflow = NULL,
     error = NULL,
     started_at = Sys.time(),
     completed_at = NULL,
@@ -76,7 +77,16 @@ run_experiment <- function(
         }
       )
 
-      list(metrics = metrics)
+      wflow <- workflows::workflow() %>%
+        workflows::add_recipe(preprocessor) %>%
+        workflows::add_model(spec)
+      
+      if (resampling_fn %in% c("tune_grid", "tune_bayes", "tune_race_anova", "tune_sim_anneal")) {
+        best_params <- tune::select_best(resampling_result)
+        wflow <- tune::finalize_workflow(wflow, best_params)
+      }
+
+      list(metrics = metrics, workflow = wflow)
     },
     list2env(
       c(
@@ -95,6 +105,7 @@ run_experiment <- function(
     onFulfilled = function(result) {
       the$experiments[[name]]$status <- "completed"
       the$experiments[[name]]$metrics <- result$metrics
+      the$experiments[[name]]$workflow <- result$workflow
       the$experiments[[name]]$completed_at <- Sys.time()
     },
     onRejected = function(error) {
@@ -112,6 +123,9 @@ run_experiment <- function(
     res <- mirai::collect_mirai(m)
     if (mirai::is_error_value(res)) {
       cat_on_eval("- Experiment {name} completed with error {res}.")
+      the$experiments[[name]]$status <- "completed"
+      the$experiments[[name]]$error <- res
+      the$experiments[[name]]$completed_at <- Sys.time()
       return(ellmer::ContentToolResult(
         error = res,
         extra = list(
@@ -127,6 +141,10 @@ run_experiment <- function(
       ))
     }
     cat_on_eval("- Experiment {name} finished successfully.")
+    the$experiments[[name]]$status <- "completed"
+    the$experiments[[name]]$metrics <- res$metrics
+    the$experiments[[name]]$workflow <- res$workflow
+    the$experiments[[name]]$completed_at <- Sys.time()
     return(ellmer::ContentToolResult(
       value = btw::btw_this(res$metrics),
       extra = list(
