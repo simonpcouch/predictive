@@ -9,6 +9,9 @@ predictive_client <- function(
   # to use something other than `vfold_cv()`
   chat$set_system_prompt(predictive_prompt())
   chat$set_turns(default_turns)
+  if (length(default_turns) == 0) {
+    the$experiments <- list()
+  }
 
   chat$register_tool(tool_run_r_code)
   chat$register_tool(tool_run_experiment)
