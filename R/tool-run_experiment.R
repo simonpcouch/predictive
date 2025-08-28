@@ -113,7 +113,7 @@ run_experiment <- function(
     if (mirai::is_error_value(res)) {
       cat_on_eval("- Experiment {name} completed with error {res}.")
       return(ellmer::ContentToolResult(
-        error = res,
+        error = as.character(res),
         extra = list(
           display_tool_request = FALSE,
           display = list(
