@@ -112,6 +112,9 @@ run_experiment <- function(
     res <- mirai::collect_mirai(m)
     if (mirai::is_error_value(res)) {
       cat_on_eval("- Experiment {name} completed with error {res}.")
+      the$experiments[[name]]$status <- "completed"
+      the$experiments[[name]]$error <- as.character(res)
+      the$experiments[[name]]$completed_at <- Sys.time()
       return(ellmer::ContentToolResult(
         error = as.character(res),
         extra = list(
@@ -127,6 +130,9 @@ run_experiment <- function(
       ))
     }
     cat_on_eval("- Experiment {name} finished successfully.")
+    the$experiments[[name]]$status <- "completed"
+    the$experiments[[name]]$metrics <- res$metrics
+    the$experiments[[name]]$completed_at <- Sys.time()
     return(ellmer::ContentToolResult(
       value = btw::btw_this(res$metrics),
       extra = list(
